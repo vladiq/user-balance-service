@@ -1,0 +1,16 @@
+project:
+  name: User Balance Microservice
+  debug: true
+  environment: development
+
+server:
+  host: localhost
+  port: 7000
+  basePath: /balance-service
+
+db:
+  DSN: "postgres://user:password@localhost:5432/postgres"
+  maxOpenConns: 2
+  maxIdleConns: 2
+  connMaxIdleTime: 10m
+  connMaxLifetime: 10m
