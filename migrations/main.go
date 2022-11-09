@@ -2,8 +2,9 @@ package main
 
 import (
 	"embed"
+
 	"github.com/vladiq/user-balance-service/pkg/config"
-	"github.com/vladiq/user-balance-service/pkg/db"
+	"github.com/vladiq/user-balance-service/pkg/postgres"
 
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/pressly/goose/v3"
@@ -21,7 +22,7 @@ func main() {
 	}
 	cfg := config.GetConfigInstance()
 
-	conn, err := db.ConnectDB(&cfg.DB)
+	conn, err := postgres.ConnectDB(&cfg.DB)
 	if err != nil {
 		log.Fatal().Err(err).Msg("sql.Open() error")
 	}

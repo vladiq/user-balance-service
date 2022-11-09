@@ -21,13 +21,17 @@ type Project struct {
 	Environment string `yaml:"environment"`
 }
 
+type Logger struct {
+	Level string `yaml:"level"`
+}
+
 type Server struct {
 	Host     string `yaml:"host"`
 	Port     int    `yaml:"port"`
 	BasePath string `yaml:"basePath"`
 }
 
-// DB - contains db information
+// DB - contains db information.
 type DB struct {
 	DSN             string        `yaml:"DSN"`
 	MaxOpenConns    int           `yaml:"maxOpenConns"`
@@ -56,9 +60,10 @@ func (db *DB) GetConnMaxLifetime() time.Duration {
 	return db.ConnMaxLifetime
 }
 
-// Config - contains all configuration parameters in config package.
+// Config - contains all configuration parameters.
 type Config struct {
 	Project Project `yaml:"project"`
+	Logger  Logger  `yaml:"logger"`
 	Server  Server  `yaml:"server"`
 	DB      DB      `yaml:"db"`
 }

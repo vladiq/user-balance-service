@@ -3,6 +3,9 @@ project:
   debug: true
   environment: development
 
+logger:
+  level: trace
+
 server:
   host: localhost
   port: 7000
