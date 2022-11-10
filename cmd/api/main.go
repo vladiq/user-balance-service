@@ -39,11 +39,11 @@ func main() {
 	}
 	defer dbConn.Close()
 
-	repo := repository.NewRepo(dbConn, l)
-	balanceService := service.NewService(repo, l)
+	repo := repository.NewRepository(l, dbConn)
+	balanceService := service.NewBalanceService(l, repo)
 
 	r := chi.NewRouter()
-	balanceHandler := handlers.NewBalance(l, balanceService)
+	balanceHandler := handlers.NewBalanceService(l, balanceService)
 	r.Mount(cfg.Server.BasePath, balanceHandler.Routes())
 
 	http.ListenAndServe(fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port), r)
