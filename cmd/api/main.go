@@ -5,7 +5,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/rs/zerolog/log"
 	"github.com/vladiq/user-balance-service/internal/handlers"
-	"github.com/vladiq/user-balance-service/internal/pkg/chilogger"
 	"github.com/vladiq/user-balance-service/internal/pkg/logger"
 	"github.com/vladiq/user-balance-service/internal/repository"
 	"github.com/vladiq/user-balance-service/internal/service"
@@ -44,8 +43,6 @@ func main() {
 	balanceService := service.NewService(repo, l)
 
 	r := chi.NewRouter()
-	r.Use(chilogger.NewStructuredLogger(&l))
-
 	balanceHandler := handlers.NewBalance(l, balanceService)
 	r.Mount(cfg.Server.BasePath, balanceHandler.Routes())
 

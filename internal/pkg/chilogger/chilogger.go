@@ -1,69 +1,56 @@
 package chilogger
 
 import (
-	"fmt"
 	"net/http"
+	"runtime/debug"
 	"time"
 
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
 )
 
-func NewStructuredLogger(logger *zerolog.Logger) func(next http.Handler) http.Handler {
-	return middleware.RequestLogger(&StructuredLogger{logger})
-}
+func LoggerMiddleware(logger *zerolog.Logger) func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		fn := func(w http.ResponseWriter, r *http.Request) {
+			log := logger.With().Logger()
 
-type StructuredLogger struct {
-	Logger *zerolog.Logger
-}
+			ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
 
-func (l *StructuredLogger) NewLogEntry(r *http.Request) middleware.LogEntry {
-	entry := &StructuredLoggerEntry{Logger: log.Log()}
+			t1 := time.Now()
+			defer func() {
+				t2 := time.Now()
 
-	logFields := map[string]interface{}{}
+				// Recover and record stack traces in case of a panic
+				if rec := recover(); rec != nil {
+					log.Error().
+						Str("type", "error").
+						Timestamp().
+						Interface("recover_info", rec).
+						Bytes("debug_stack", debug.Stack()).
+						Msg("log system error")
+					http.Error(ww, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+				}
 
-	//logFields["ts"] = time.Now().UTC().Format(time.RFC1123)
+				// log end request
+				log.Info().
+					Str("type", "access").
+					Timestamp().
+					Fields(map[string]interface{}{
+						"remote_ip":  r.RemoteAddr,
+						"url":        r.URL.Path,
+						"proto":      r.Proto,
+						"method":     r.Method,
+						"user_agent": r.Header.Get("User-Agent"),
+						"status":     ww.Status(),
+						"latency_ms": float64(t2.Sub(t1).Nanoseconds()) / 1000000.0,
+						"bytes_in":   r.Header.Get("Content-Length"),
+						"bytes_out":  ww.BytesWritten(),
+					}).
+					Msg("incoming_request")
+			}()
 
-	if reqID := middleware.GetReqID(r.Context()); reqID != "" {
-		logFields["req_id"] = reqID
+			next.ServeHTTP(ww, r)
+		}
+		return http.HandlerFunc(fn)
 	}
-
-	scheme := "http"
-	if r.TLS != nil {
-		scheme = "https"
-	}
-	//logFields["http_scheme"] = scheme
-	logFields["http_proto"] = r.Proto
-	logFields["http_method"] = r.Method
-
-	//logFields["remote_addr"] = r.RemoteAddr
-	//logFields["user_agent"] = r.UserAgent()
-
-	logFields["uri"] = fmt.Sprintf("%s://%s%s", scheme, r.Host, r.RequestURI)
-
-	entry.Logger = entry.Logger.Fields(logFields)
-	entry.Logger.Msg("request started")
-
-	return entry
-}
-
-type StructuredLoggerEntry struct {
-	Logger *zerolog.Event
-}
-
-func (l *StructuredLoggerEntry) Write(status, bytes int, header http.Header, elapsed time.Duration, extra interface{}) {
-	l.Logger = l.Logger.Fields(map[string]interface{}{
-		"resp_status": status, "resp_bytes_length": bytes,
-		"resp_elapsed_ms": float64(elapsed.Nanoseconds()) / 1000000.0,
-	})
-	l.Logger.Msg("request complete")
-}
-
-func (l *StructuredLoggerEntry) Panic(v interface{}, stack []byte) {
-	l.Logger = l.Logger.Fields(map[string]interface{}{
-		"stack": string(stack),
-		"panic": fmt.Sprintf("%+v", v),
-	})
-	l.Logger.Msg("request failed")
 }

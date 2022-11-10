@@ -4,10 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/render"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
 	"github.com/vladiq/user-balance-service/internal/domain"
+	"github.com/vladiq/user-balance-service/internal/pkg/chilogger"
 	"net/http"
+	"time"
 )
 
 type BalanceService interface {
@@ -28,17 +32,18 @@ func NewBalance(logger zerolog.Logger, service BalanceService) *Balance {
 }
 
 func (b *Balance) Routes() chi.Router {
-	r := chi.NewRouter()
+	router := chi.NewRouter()
+	router.Use(render.SetContentType(render.ContentTypeJSON))
+	router.Use(middleware.RedirectSlashes)
+	router.Use(middleware.Recoverer)
+	router.Use(chilogger.LoggerMiddleware(&b.logger))
+	router.Use(middleware.Timeout(5 * time.Second))
 
-	r.Route("/", func(r chi.Router) {
-		r.Get("/{userID}", b.getBalance)
+	router.Route("/", func(r chi.Router) {
+		router.Get("/{userID}", b.getBalance)
 	})
 
-	//r.Route("/", func(r chi.Router) {
-	//	r.Patch("/{userID}?action=add_funds", b.addFunds)
-	//})
-
-	return r
+	return router
 }
 
 func (b *Balance) getBalance(w http.ResponseWriter, r *http.Request) {
