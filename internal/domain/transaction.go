@@ -1,7 +1,7 @@
 package domain
 
 import (
-	uuid "github.com/jackc/pgtype/ext/gofrs-uuid"
+	"github.com/google/uuid"
 	"time"
 )
 

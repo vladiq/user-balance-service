@@ -17,9 +17,6 @@ import (
 )
 
 type Service interface {
-	AddFundsToAccount(ctx context.Context, userID uuid.UUID, amount float64) error
-	MakeReservation(ctx context.Context, userID uuid.UUID, orderID uuid.UUID, amount float64) error
-	AcceptReservation(ctx context.Context, userID uuid.UUID, serviceID uuid.UUID, orderID uuid.UUID, amount float64) error
 	GetUserBalance(ctx context.Context, userID uuid.UUID) (*domain.Account, error)
 }
 
@@ -28,7 +25,7 @@ type handler struct {
 	service Service
 }
 
-func NewBalanceService(logger zerolog.Logger, service Service) *handler {
+func NewHandler(logger zerolog.Logger, service Service) *handler {
 	return &handler{
 		logger:  logger,
 		service: service,
@@ -36,38 +33,38 @@ func NewBalanceService(logger zerolog.Logger, service Service) *handler {
 }
 
 func (h *handler) Routes() chi.Router {
-	router := chi.NewRouter()
+	r := chi.NewRouter()
 
-	router.Use(render.SetContentType(render.ContentTypeJSON))
+	r.Use(render.SetContentType(render.ContentTypeJSON))
 
-	router.Use(middleware.RedirectSlashes)
-	router.Use(chilogger.LoggerMiddleware(&h.logger))
-	router.Use(middleware.Recoverer)
-	router.Use(middleware.Timeout(5 * time.Second))
+	r.Use(middleware.RedirectSlashes)
+	r.Use(chilogger.LoggerMiddleware(&h.logger))
+	r.Use(middleware.Recoverer)
+	r.Use(middleware.Timeout(30 * time.Second))
 
-	router.Route("/", func(r chi.Router) {
-		router.Route("/users", func(r chi.Router) {
-			router.Get("/{userID}", h.getBalance)    // получение баланса пользователя (id пользователя)
-			router.Post("/", h.createUser)           // создание аккаунта с данной суммой (id пользователя, сумма)
-			router.Put("/{userID}", h.updateBalance) // зачисление и списание средств (id пользователя, сколько средств зачислить)
+	r.Route("/", func(r chi.Router) {
+		r.Route("/users", func(r chi.Router) {
+			r.Get("/{userID}", h.getBalance) // получение баланса пользователя (id пользователя)
+			//r.Post("/", h.createUser)           // создание аккаунта с данной суммой (id пользователя, сумма)
+			//r.Put("/{userID}", h.updateBalance) // зачисление и списание средств (id пользователя, сколько средств зачислить)
 		})
 
-		router.Route("/transactions", func(r chi.Router) {
-			router.Post("/", h.createTransaction) // перевод от пользователя к пользователю ()
-		})
-
-		router.Route("/reservations", func(r chi.Router) {
-			router.Post("/", h.createReservation)            // резервирование на отдельном счёте (id пользователя, id услуги, id заказа, сумма)
-			router.Put("/{reservationID}", h.endReservation) // признание выручки - списать из резерва деньги, добавить запись в отчёт для бухгалтерии (id пользователя, id услуги, id заказа, сумма)
-		})
-
-		router.Route("/reports", func(r chi.Router) {
-			router.Get("/service-report", h.serviceReport)    // предоставить отчёт для всех пользователей (вход: год, месяц)
-			router.Get("/user-report/{userID}", r.userReport) // получение списка транзакций пользователя
-		})
+		//r.Route("/transactions", func(r chi.Router) {
+		//	r.Post("/", h.createTransaction) // перевод от пользователя к пользователю ()
+		//})
+		//
+		//r.Route("/reservations", func(r chi.Router) {
+		//	r.Post("/", h.createReservation)            // резервирование на отдельном счёте (id пользователя, id услуги, id заказа, сумма)
+		//	r.Put("/{reservationID}", h.endReservation) // признание выручки - списать из резерва деньги, добавить запись в отчёт для бухгалтерии (id пользователя, id услуги, id заказа, сумма)
+		//})
+		//
+		//r.Route("/reports", func(r chi.Router) {
+		//	r.Get("/service-report", h.serviceReport)    // предоставить отчёт для всех пользователей (вход: год, месяц)
+		//	r.Get("/user-report/{userID}", r.userReport) // получение списка транзакций пользователя
+		//})
 	})
 
-	return router
+	return r
 }
 
 func (h *handler) getBalance(w http.ResponseWriter, r *http.Request) {
@@ -76,6 +73,7 @@ func (h *handler) getBalance(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		h.logger.Fatal().Err(err).Msg("failed uuid parsing")
 	}
+
 	account, err := h.service.GetUserBalance(r.Context(), userID)
 
 	err = json.NewEncoder(w).Encode(account)

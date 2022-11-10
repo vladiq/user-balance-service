@@ -9,47 +9,23 @@ import (
 	"github.com/rs/zerolog"
 )
 
-type Repository interface {
-	AddFundsToAccount(ctx context.Context, userID uuid.UUID, amount float64) error
-	MakeReservation(ctx context.Context, userID uuid.UUID, orderID uuid.UUID, amount float64) error
-	AcceptReservation(ctx context.Context, userID uuid.UUID, serviceID uuid.UUID, orderID uuid.UUID, amount float64) error
-	GetUserBalance(ctx context.Context, userID uuid.UUID) (*domain.Account, error)
-}
-
-type Service interface {
-	AddFundsToAccount(ctx context.Context, userID uuid.UUID, amount float64) error
-	MakeReservation(ctx context.Context, userID uuid.UUID, orderID uuid.UUID, amount float64) error
-	AcceptReservation(ctx context.Context, userID uuid.UUID, serviceID uuid.UUID, orderID uuid.UUID, amount float64) error
-	GetUserBalance(ctx context.Context, userID uuid.UUID) (*domain.Account, error)
-}
-
-type BalanceService struct {
+type balanceService struct {
 	logger zerolog.Logger
-	repo   Repository
+
+	accountRepo     accountRepo
+	reservationRepo reservationRepo
+	transactionRepo transactionRepo
 }
 
-func NewBalanceService(logger zerolog.Logger, repo Repository) *BalanceService {
-	return &BalanceService{
-		logger: logger,
-		repo:   repo,
+func NewBalanceService(logger zerolog.Logger, ar accountRepo, rr reservationRepo, tr transactionRepo) *balanceService {
+	return &balanceService{
+		logger:          logger,
+		accountRepo:     ar,
+		reservationRepo: rr,
+		transactionRepo: tr,
 	}
 }
 
-func (bs *BalanceService) AddFundsToAccount(ctx context.Context, userID uuid.UUID, amount float64) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (bs *BalanceService) MakeReservation(ctx context.Context, userID uuid.UUID, orderID uuid.UUID, amount float64) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (bs *BalanceService) AcceptReservation(ctx context.Context, userID uuid.UUID, serviceID uuid.UUID, orderID uuid.UUID, amount float64) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (bs *BalanceService) GetUserBalance(ctx context.Context, userID uuid.UUID) (*domain.Account, error) {
-	return bs.repo.GetUserBalance(ctx, userID)
+func (bs *balanceService) GetUserBalance(ctx context.Context, userID uuid.UUID) (*domain.Account, error) {
+	return bs.accountRepo.GetUserBalance(ctx, userID)
 }

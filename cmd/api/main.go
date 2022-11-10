@@ -2,15 +2,19 @@ package main
 
 import (
 	"fmt"
-	"github.com/go-chi/chi/v5"
-	"github.com/rs/zerolog/log"
+	"net/http"
+
 	"github.com/vladiq/user-balance-service/internal/handlers"
 	"github.com/vladiq/user-balance-service/internal/pkg/logger"
-	"github.com/vladiq/user-balance-service/internal/repository"
+	"github.com/vladiq/user-balance-service/internal/repository/account"
+	"github.com/vladiq/user-balance-service/internal/repository/reservation"
+	"github.com/vladiq/user-balance-service/internal/repository/transaction"
 	"github.com/vladiq/user-balance-service/internal/service"
 	"github.com/vladiq/user-balance-service/pkg/config"
 	"github.com/vladiq/user-balance-service/pkg/postgres"
-	"net/http"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/rs/zerolog/log"
 )
 
 const configYML = "config.yml"
@@ -39,11 +43,14 @@ func main() {
 	}
 	defer dbConn.Close()
 
-	repo := repository.NewRepository(l, dbConn)
-	balanceService := service.NewBalanceService(l, repo)
+	accountRepo := account.NewAccountRepository(l, dbConn)
+	reservationRepo := reservation.NewReservationRepository(l, dbConn)
+	transactionRepo := transaction.NewTransactionRepository(l, dbConn)
+
+	balanceService := service.NewBalanceService(l, accountRepo, reservationRepo, transactionRepo)
 
 	r := chi.NewRouter()
-	balanceHandler := handlers.NewBalanceService(l, balanceService)
+	balanceHandler := handlers.NewHandler(l, balanceService)
 	r.Mount(cfg.Server.BasePath, balanceHandler.Routes())
 
 	http.ListenAndServe(fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port), r)

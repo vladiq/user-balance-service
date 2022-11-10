@@ -1,8 +1,6 @@
-package queries
+package reservation
 
-import (
-	"github.com/jmoiron/sqlx"
-)
+import "github.com/jmoiron/sqlx"
 
 type Queries struct {
 	DB *sqlx.DB
