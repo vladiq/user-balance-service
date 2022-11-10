@@ -2,10 +2,10 @@ package queries
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"github.com/google/uuid"
 	"github.com/vladiq/user-balance-service/internal/domain"
+	"github.com/vladiq/user-balance-service/internal/repository/repo-dto"
 )
 
 // AddFundsToAccount Метод начисления средств на баланс. Принимает id пользователя и сколько средств зачислить.
@@ -33,18 +33,18 @@ const getUserBalanceQuery = `
 `
 
 func (q *Queries) GetUserBalance(ctx context.Context, userID uuid.UUID) (*domain.Account, error) {
-	account := &domain.Account{}
+	dtoAccount := &repo_dto.Account{}
 
-	row := q.DB.QueryRowContext(ctx, getUserBalanceQuery, userID)
-	err := row.Scan(&account.ID, &account.Balance, &account.CreatedAt)
-
+	row := q.DB.QueryRowxContext(ctx, getUserBalanceQuery, userID)
+	err := row.StructScan(dtoAccount)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			// q.l. log
-			return nil, err
-		} else {
-			return nil, err
-		}
+		return nil, err // handle ErrNoRows?
+	}
+
+	account := &domain.Account{
+		ID:        dtoAccount.ID,
+		Balance:   dtoAccount.Balance,
+		CreatedAt: dtoAccount.CreatedAt,
 	}
 
 	return account, nil

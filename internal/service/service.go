@@ -2,9 +2,11 @@ package service
 
 import (
 	"context"
+
+	"github.com/vladiq/user-balance-service/internal/domain"
+
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
-	"github.com/vladiq/user-balance-service/internal/domain"
 )
 
 type Repository interface {

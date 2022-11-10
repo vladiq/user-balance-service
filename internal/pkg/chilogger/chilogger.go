@@ -38,6 +38,7 @@ func LoggerMiddleware(logger *zerolog.Logger) func(next http.Handler) http.Handl
 					Fields(map[string]interface{}{
 						"remote_ip":  r.RemoteAddr,
 						"url":        r.URL.Path,
+						"query":      r.URL.Query(),
 						"proto":      r.Proto,
 						"method":     r.Method,
 						"user_agent": r.Header.Get("User-Agent"),

@@ -8,14 +8,14 @@ import (
 
 type repository struct {
 	*queries.Queries
-	DB *sqlx.DB
-	l  zerolog.Logger
+	DB     *sqlx.DB
+	logger zerolog.Logger
 }
 
-func NewRepository(l zerolog.Logger, db *sqlx.DB) *repository {
+func NewRepository(logger zerolog.Logger, db *sqlx.DB) *repository {
 	return &repository{
 		DB:      db,
 		Queries: queries.New(db),
-		l:       l,
+		logger:  logger,
 	}
 }
