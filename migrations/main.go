@@ -22,7 +22,7 @@ func main() {
 	}
 	cfg := config.GetConfigInstance()
 
-	conn, err := postgres.ConnectDB(&cfg.DB)
+	conn, err := postgres.New(&cfg.DB)
 	if err != nil {
 		log.Fatal().Err(err).Msg("sql.Open() error")
 	}

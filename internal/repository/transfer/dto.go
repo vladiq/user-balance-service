@@ -1,4 +1,4 @@
-package transaction
+package transfer
 
 import (
 	"github.com/google/uuid"
@@ -15,8 +15,8 @@ type DTO struct {
 	CreatedAt time.Time `db:"created_at"`
 }
 
-func (dto *DTO) Entity() *domain.Transaction {
-	t := &domain.Transaction{
+func (dto *DTO) Entity() *domain.Transfer {
+	t := &domain.Transfer{
 		ID:        dto.ID,
 		AccountID: dto.AccountID,
 		IsAccrual: dto.IsAccrual,

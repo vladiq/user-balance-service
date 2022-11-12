@@ -8,12 +8,16 @@ import (
 	"github.com/google/uuid"
 )
 
-type accountRepo interface {
-	GetUserBalance(ctx context.Context, userID uuid.UUID) (*domain.Account, error)
+type AccountRepo interface {
+	GetUser(ctx context.Context, userID uuid.UUID) (*domain.Account, error)
+	CreateAccount(ctx context.Context, amount float64) error
+	DepositFunds(ctx context.Context, userID uuid.UUID, amount float64) error
+	WithdrawFunds(ctx context.Context, userID uuid.UUID, amount float64) error
 }
 
-type reservationRepo interface {
+type ReservationRepo interface {
+	CreateReservation(ctx context.Context, userID uuid.UUID, serviceID uuid.UUID, orderID uuid.UUID, amount float64) error
 }
 
-type transactionRepo interface {
+type TransferRepo interface {
 }

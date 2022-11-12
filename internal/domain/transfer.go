@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type Transaction struct {
+type Transfer struct {
 	ID        uuid.UUID
 	AccountID uuid.UUID
 	IsAccrual bool

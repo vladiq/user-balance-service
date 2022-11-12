@@ -14,7 +14,7 @@ type reservationRepository struct {
 func NewReservationRepository(logger zerolog.Logger, db *sqlx.DB) *reservationRepository {
 	return &reservationRepository{
 		DB:      db,
-		Queries: New(db),
+		Queries: NewQueries(db, logger),
 		logger:  logger,
 	}
 }

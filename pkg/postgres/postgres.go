@@ -1,6 +1,8 @@
 package postgres
 
 import (
+	"context"
+	"fmt"
 	"time"
 
 	_ "github.com/jackc/pgx/v4/stdlib"
@@ -15,11 +17,15 @@ type Config interface {
 	GetConnMaxLifetime() time.Duration
 }
 
-func ConnectDB(cfg Config) (*sqlx.DB, error) {
+func New(ctx context.Context, cfg Config) (*sqlx.DB, error) {
 	db, err := sqlx.Open("pgx", cfg.GetDSN())
-
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("connecting to database with sqlx.Open(): %w", err)
+	}
+
+	err = db.PingContext(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("pinging database with PingContext(): %w", err)
 	}
 
 	db.SetMaxOpenConns(cfg.GetMaxOpenConns())
