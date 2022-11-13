@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"embed"
 
 	"github.com/vladiq/user-balance-service/pkg/config"
@@ -22,7 +23,7 @@ func main() {
 	}
 	cfg := config.GetConfigInstance()
 
-	conn, err := postgres.New(&cfg.DB)
+	conn, err := postgres.New(context.Background(), &cfg.DB)
 	if err != nil {
 		log.Fatal().Err(err).Msg("database connection error")
 	}

@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-ozzo/ozzo-validation"
+	"github.com/go-ozzo/ozzo-validation/is"
 	"github.com/google/uuid"
 )
 
@@ -22,9 +23,14 @@ func (r *CreateAccount) Bind(req *http.Request) error {
 }
 
 func (r *CreateAccount) validate() error {
-	if err := validation.Validate(r.Amount, validation.Required, validation.Min(float64(0))); err != nil {
+	if err := validation.Validate(
+		r.Amount,
+		validation.Required,
+		validation.Min(float64(0)),
+	); err != nil {
 		return fmt.Errorf("validating amount: %w", err)
 	}
+
 	return nil
 }
 
@@ -39,6 +45,18 @@ func (r *GetAccount) Bind(req *http.Request) error {
 		return fmt.Errorf("binding body: %w", err)
 	} else {
 		r.ID = accountID
+	}
+
+	return r.validate()
+}
+
+func (r *GetAccount) validate() error {
+	if err := validation.Validate(
+		r.ID,
+		validation.Required,
+		is.UUID,
+	); err != nil {
+		return fmt.Errorf("validating ID: %w", err)
 	}
 
 	return nil
@@ -60,7 +78,11 @@ func (df *DepositFunds) validate() error {
 	if err := validation.Validate(df.Amount, validation.Required, validation.Min(float64(0))); err != nil {
 		return fmt.Errorf("validating amount: %w", err)
 	}
-	// TODO add validation of uuid correctness to all validate() methods!!!
+
+	if err := validation.Validate(df.ID, validation.Required, is.UUID); err != nil {
+		return fmt.Errorf("validating ID: %w", err)
+	}
+
 	return nil
 }
 
@@ -80,6 +102,9 @@ func (wf *WithdrawFunds) validate() error {
 	if err := validation.Validate(wf.Amount, validation.Required, validation.Min(float64(0))); err != nil {
 		return fmt.Errorf("validating amount: %w", err)
 	}
-	// TODO: add validation of uuid correctness to all validate() methods!!!
+
+	if err := validation.Validate(wf.ID, validation.Required, is.UUID); err != nil {
+		return fmt.Errorf("validating ID: %w", err)
+	}
 	return nil
 }

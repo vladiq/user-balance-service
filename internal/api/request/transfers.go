@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-ozzo/ozzo-validation"
+	"github.com/go-ozzo/ozzo-validation/is"
 	"github.com/google/uuid"
 )
 
@@ -28,6 +29,15 @@ func (r *MakeTransfer) validate() error {
 	if err := validation.Validate(r.Amount, validation.Required, validation.Min(float64(0))); err != nil {
 		return fmt.Errorf("validating amount: %w", err)
 	}
+
+	if err := validation.Validate(r.ToID, validation.Required, is.UUID); err != nil {
+		return fmt.Errorf("validating ToID: %w", err)
+	}
+
+	if err := validation.Validate(r.FromID, validation.Required, is.UUID); err != nil {
+		return fmt.Errorf("validating FromID: %w", err)
+	}
+
 	return nil
 }
 
@@ -63,6 +73,10 @@ func (r *UserMonthlyReport) Bind(req *http.Request) error {
 func (r *UserMonthlyReport) validate() error {
 	if err := validation.Validate(r.Month, validation.Required, validation.Max(12)); err != nil {
 		return fmt.Errorf("validating month: %w", err)
+	}
+
+	if err := validation.Validate(r.AccountID, validation.Required, is.UUID); err != nil {
+		return fmt.Errorf("validating AccountID: %w", err)
 	}
 
 	return nil

@@ -3,22 +3,16 @@ package mapper
 import (
 	"github.com/vladiq/user-balance-service/internal/api/request"
 	"github.com/vladiq/user-balance-service/internal/domain"
-
-	"github.com/google/uuid"
 )
 
 type Reservation struct {
 }
 
 func (m Reservation) MakeCreateReservationEntity(r request.CreateReservation) domain.Reservation {
-	userID, _ := uuid.Parse(r.UserID)
-	serviceID, _ := uuid.Parse(r.ServiceID)
-	orderID, _ := uuid.Parse(r.OrderID)
-
 	return domain.Reservation{
-		AccountID: userID,
-		ServiceID: serviceID,
-		OrderID:   orderID,
+		AccountID: r.UserID,
+		ServiceID: r.ServiceID,
+		OrderID:   r.OrderID,
 		Amount:    r.Amount,
 	}
 }
