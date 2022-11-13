@@ -27,7 +27,7 @@ func NewBalanceService(logger zerolog.Logger, ar AccountRepo, rr ReservationRepo
 	}
 }
 
-func (bs *balanceService) GetUser(ctx context.Context, userID uuid.UUID) (*domain.Account, error) {
+func (bs *balanceService) GetAccount(ctx context.Context, userID uuid.UUID) (*domain.Account, error) {
 	account, err := bs.accountRepo.GetUser(ctx, userID)
 	if err != nil {
 		return nil, fmt.Errorf("getting user balance: %w", err)
@@ -61,6 +61,7 @@ func (bs *balanceService) UpdateBalance(ctx context.Context, userID uuid.UUID, a
 	return nil
 }
 
-func (bs *balanceService) CreateReservation(ctx context.Context, userID uuid.UUID, serviceID uuid.UUID, orderID uuid.UUID, amount float64) error {
-
-}
+//
+//func (bs *balanceService) CreateReservation(ctx context.Context, userID uuid.UUID, serviceID uuid.UUID, orderID uuid.UUID, amount float64) error {
+//
+//}

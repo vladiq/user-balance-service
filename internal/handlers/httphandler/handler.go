@@ -14,7 +14,7 @@ import (
 )
 
 type Service interface {
-	GetUser(ctx context.Context, userID uuid.UUID) (*domain.Account, error)
+	GetAccount(ctx context.Context, userID uuid.UUID) (*domain.Account, error)
 	CreateAccount(ctx context.Context, amount float64) error
 	UpdateBalance(ctx context.Context, userID uuid.UUID, amount float64) error
 	CreateReservation(ctx context.Context, userID uuid.UUID, serviceID uuid.UUID, orderID uuid.UUID, amount float64) error
@@ -51,10 +51,10 @@ func (h *handler) Routes() chi.Router {
 		//	r.Post("/", h.createTransaction) // перевод от пользователя к пользователю ()
 		//})
 
-		r.Route("/reservations", func(r chi.Router) {
-			r.Post("/", h.createReservation) // резервирование на отдельном счёте (id пользователя, id услуги, id заказа, сумма)
-			//r.Put("/{reservationID}", h.endReservation) // признание выручки - списать из резерва деньги, добавить запись в отчёт для бухгалтерии (id пользователя, id услуги, id заказа, сумма)
-		})
+		//r.Route("/reservations", func(r chi.Router) {
+		//	r.Post("/", h.createReservation) // резервирование на отдельном счёте (id пользователя, id услуги, id заказа, сумма)
+		//	//r.Put("/{reservationID}", h.endReservation) // признание выручки - списать из резерва деньги, добавить запись в отчёт для бухгалтерии (id пользователя, id услуги, id заказа, сумма)
+		//})
 
 		//r.Route("/reports", func(r chi.Router) {
 		//	r.Get("/service-report", h.serviceReport)                // предоставить отчёт для всех пользователей (вход: год, месяц)

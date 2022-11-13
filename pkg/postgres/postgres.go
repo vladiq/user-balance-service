@@ -20,12 +20,12 @@ type Config interface {
 func New(ctx context.Context, cfg Config) (*sqlx.DB, error) {
 	db, err := sqlx.Open("pgx", cfg.GetDSN())
 	if err != nil {
-		return nil, fmt.Errorf("connecting to database with sqlx.Open(): %w", err)
+		return nil, fmt.Errorf("connecting to database: %w", err)
 	}
 
 	err = db.PingContext(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("pinging database with PingContext(): %w", err)
+		return nil, fmt.Errorf("pinging database: %w", err)
 	}
 
 	db.SetMaxOpenConns(cfg.GetMaxOpenConns())

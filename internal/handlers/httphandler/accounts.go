@@ -18,7 +18,7 @@ func (h *handler) getBalance(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	account, err := h.service.GetUser(r.Context(), userID)
+	account, err := h.service.GetAccount(r.Context(), userID)
 	if err != nil {
 		render.Status(r, http.StatusBadRequest)
 		render.PlainText(w, r, err.Error())

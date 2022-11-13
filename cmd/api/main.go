@@ -3,15 +3,15 @@ package main
 import (
 	"context"
 	"fmt"
-	http2 "github.com/vladiq/user-balance-service/internal/handlers/httphandler"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/vladiq/user-balance-service/cmd/api/handlers"
+	"github.com/vladiq/user-balance-service/internal/api/service"
+	"github.com/vladiq/user-balance-service/internal/pkg/chilogger"
+	"github.com/vladiq/user-balance-service/internal/repository"
 	"net/http"
 	"time"
 
 	"github.com/vladiq/user-balance-service/internal/pkg/logging"
-	"github.com/vladiq/user-balance-service/internal/repository/account"
-	"github.com/vladiq/user-balance-service/internal/repository/reservation"
-	"github.com/vladiq/user-balance-service/internal/repository/transfer"
-	"github.com/vladiq/user-balance-service/internal/service"
 	"github.com/vladiq/user-balance-service/pkg/config"
 	"github.com/vladiq/user-balance-service/pkg/postgres"
 
@@ -39,6 +39,7 @@ func main() {
 		Msgf("Starting service: %s", cfg.Project.Name)
 
 	logger.Trace().Str("DSN", cfg.DB.DSN).Msg("Connecting to database")
+
 	initCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	dbConn, err := postgres.New(initCtx, &cfg.DB)
@@ -47,15 +48,29 @@ func main() {
 	}
 	defer dbConn.Close()
 
-	accountRepo := account.NewAccountRepository(logger, dbConn)
-	reservationRepo := reservation.NewReservationRepository(logger, dbConn)
-	transactionRepo := transfer.NewTransferRepository(logger, dbConn)
+	accountRepo := repository.NewAccountRepository(dbConn)
+	reservationRepo := repository.NewReservationRepository(dbConn)
+	//transactionRepo := repository.NewTransferRepository(dbConn)
 
-	balanceService := service.NewBalanceService(logger, accountRepo, reservationRepo, transactionRepo)
+	reservationsService := service.NewReservations(reservationRepo)
+	accountsService := service.NewAccounts(accountRepo)
+
+	reservationsHandler := handlers.NewReservations(reservationsService)
+	accountsHandler := handlers.NewAccounts(accountsService)
 
 	r := chi.NewRouter()
-	balanceHandler := http2.NewHandler(logger, balanceService)
-	r.Mount(cfg.Server.BasePath, balanceHandler.Routes())
+
+	r.Use(middleware.RedirectSlashes)
+	r.Use(chilogger.LoggerMiddleware(&logger))
+	r.Use(middleware.Recoverer)
+	r.Use(middleware.Timeout(30 * time.Second))
+
+	r.Route(cfg.Server.BasePath, func(r chi.Router) {
+		r.Mount("/reservations", reservationsHandler.Routes())
+		r.Mount("/accounts", accountsHandler.Routes())
+	})
+	//r.Mount(cfg.Server.BasePath, reservationsHandler.Routes())
+	//r.Mount()
 
 	logger.Info().Msgf("Starting service at %s:%d%s", cfg.Server.Host, cfg.Server.Port, cfg.Server.BasePath)
 	http.ListenAndServe(fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port), r)

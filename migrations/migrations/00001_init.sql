@@ -1,5 +1,5 @@
 -- +goose Up
-CREATE TABLE IF NOT EXISTS "accounts" (
+CREATE TABLE "accounts" (
     "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
     "balance" DECIMAL(15, 2) NOT NULL DEFAULT 0,
     "created_at" timestamptz NOT NULL DEFAULT (now()),
@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS "accounts" (
     CONSTRAINT balance_non_negative CHECK (balance >= 0)
 );
 
-CREATE TABLE IF NOT EXISTS "transactions" (
+CREATE TABLE "transactions" (
     "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
     "account_id" uuid REFERENCES "accounts" ("id"),
     "is_accrual" bool NOT NULL, -- whether to add or remove money from balance. If true, money is added to balance
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS "transactions" (
     CONSTRAINT amount_non_negative CHECK (amount >= 0)
 );
 
-CREATE TABLE IF NOT EXISTS "reservations" (
+CREATE TABLE "reservations" (
     "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
     "account_id" uuid REFERENCES "accounts" ("id"),
     "service_id" uuid NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS "reservations" (
     CONSTRAINT amount_non_negative CHECK (amount >= 0)
 );
 
-CREATE TABLE IF NOT EXISTS "reports" (
+CREATE TABLE "reports" (
     "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
     "account_id" uuid NOT NULL REFERENCES "accounts" ("id"),
     "created_at" timestamptz NOT NULL DEFAULT (now())

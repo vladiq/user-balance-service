@@ -1,13 +1,13 @@
-POST http://localhost:7000/balance-service/users
+POST http://localhost:7000/balance-service/accounts
 Content-Type: application/json
 
 {
-  "amount": 1000000.99
+  "amount": 1234
 }
 
 ###
 
-POST http://localhost:7000/balance-service/users
+POST http://localhost:7000/balance-service/accounts
 Content-Type: application/json
 
 {
@@ -16,12 +16,12 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:7000/balance-service/users/ffa39862-f4ce-4bb1-8f30-ec1aae86c41b
+GET http://localhost:7000/balance-service/accounts/ffa39862-f4ce-4bb1-8f30-ec1aae86c41b
 Accept: application/json
 
 ###
 
-PUT http://localhost:7000/balance-service/users/ffa39862-f4ce-4bb1-8f30-ec1aae86c41b
+PUT http://localhost:7000/balance-service/accounts/ffa39862-f4ce-4bb1-8f30-ec1aae86c41b
 Accept: application/json
 
 {
@@ -34,8 +34,8 @@ POST http://localhost:7000/balance-service/reservations
 Content-Type: application/json
 
 {
-  "user_id": "135f709f-722b-4f2c-86ce-a590f01b62be",
-  "service_id": "c467ec7f-3f9a-4b57-bea0-88d9dbbdcdde",
-  "order_id": "a925b4d6-49ee-4182-bbf9-d5a7e2496113",
-  "amount": 100
+  "user_id": "497540a7-4d96-41da-9c6b-7a2ad3daa998",
+  "service_id": "497540a7-4d96-41da-9c6b-7a2ad3daa998",
+  "order_id": "497540a7-4d96-41da-9c6b-7a2ad3daa998",
+  "amount": 1
 }

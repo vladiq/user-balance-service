@@ -1,12 +1,13 @@
-package reservation
+package models
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 	"github.com/vladiq/user-balance-service/internal/domain"
-	"time"
 )
 
-type DTO struct {
+type Reservations struct {
 	ID        uuid.UUID `db:"id"`
 	AccountID uuid.UUID `db:"account_id"`
 	ServiceID uuid.UUID `db:"service_id"`
@@ -16,7 +17,7 @@ type DTO struct {
 	ClosedAt  time.Time `db:"closed_at"`
 }
 
-func (dto *DTO) Entity() *domain.Reservation {
+func (dto *Reservations) Entity() *domain.Reservation {
 	r := &domain.Reservation{
 		ID:        dto.ID,
 		AccountID: dto.AccountID,
