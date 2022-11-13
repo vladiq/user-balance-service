@@ -33,7 +33,7 @@ func (h *accounts) Routes() *chi.Mux {
 	r.Get("/{accountID}", h.getAccount)
 	r.Post("/", h.createAccount)
 	r.Put("/deposit", h.depositFunds)
-	r.Put("/withdraw", h.withdrawFunds)
+	r.Put("/withdraw", h.withdrawFunds) // криво сделал, надо передавать
 
 	return r
 }

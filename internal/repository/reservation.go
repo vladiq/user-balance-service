@@ -56,6 +56,20 @@ func (r *reservationRepository) Create(ctx context.Context, e domain.Reservation
 		return fmt.Errorf("withdrawing funds: %w", err)
 	}
 
+	if err := queries.AddTransferData(
+		ctx,
+		tx,
+		e.AccountID,
+		false,
+		e.Amount,
+		"withdrawing money to make a reservation",
+	); err != nil {
+		if err := tx.Rollback(); err != nil {
+			return fmt.Errorf("rolling transaction back: %w", err)
+		}
+		return fmt.Errorf("adding a money transfer record: %w", err)
+	}
+
 	if err := tx.Commit(); err != nil {
 		return fmt.Errorf("commiting transaction: %w", err)
 	}
@@ -63,7 +77,7 @@ func (r *reservationRepository) Create(ctx context.Context, e domain.Reservation
 	return nil
 }
 
-func (r *reservationRepository) Delete(ctx context.Context, entity domain.Reservation) error {
+func (r *reservationRepository) Cancel(ctx context.Context, entity domain.Reservation) error {
 	opts := sql.TxOptions{
 		ReadOnly:  false,
 		Isolation: sql.LevelSerializable,
@@ -74,12 +88,12 @@ func (r *reservationRepository) Delete(ctx context.Context, entity domain.Reserv
 		return fmt.Errorf("beginning transaction: %w", err)
 	}
 
-	accountID, amount, err := queries.GetReservationData(ctx, tx, entity.ID)
+	accountID, _, amount, err := queries.DeleteReservation(ctx, tx, entity.ID)
 	if err != nil {
 		if err := tx.Rollback(); err != nil {
 			return fmt.Errorf("rolling transaction back: %w", err)
 		}
-		return fmt.Errorf("getting account id and amount from reservation entry: %w", err)
+		return fmt.Errorf("deleting reservation entry: %w", err)
 	}
 
 	if err := queries.DepositFunds(ctx, tx, accountID, amount); err != nil {
@@ -89,11 +103,51 @@ func (r *reservationRepository) Delete(ctx context.Context, entity domain.Reserv
 		return fmt.Errorf("returning funds to account balance: %w", err)
 	}
 
-	if err := queries.DeleteReservation(ctx, tx, entity.ID); err != nil {
+	if err := queries.AddTransferData(
+		ctx,
+		tx,
+		accountID,
+		true,
+		amount,
+		"payback after cancelling reservation",
+	); err != nil {
+		if err := tx.Rollback(); err != nil {
+			return fmt.Errorf("rolling transaction back: %w", err)
+		}
+		return fmt.Errorf("adding a money transfer record: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("commiting transaction: %w", err)
+	}
+
+	return nil
+}
+
+func (r *reservationRepository) Confirm(ctx context.Context, entity domain.Reservation) error {
+	opts := sql.TxOptions{
+		ReadOnly:  false,
+		Isolation: sql.LevelSerializable,
+	}
+
+	tx, err := r.DB.BeginTx(ctx, &opts)
+	if err != nil {
+		return fmt.Errorf("beginning transaction: %w", err)
+	}
+
+	_, serviceID, amount, err := queries.DeleteReservation(ctx, tx, entity.ID)
+	if err != nil {
 		if err := tx.Rollback(); err != nil {
 			return fmt.Errorf("rolling transaction back: %w", err)
 		}
 		return fmt.Errorf("deleting reservation entry: %w", err)
+	}
+
+	if err := queries.CreateReportEntry(ctx, tx, serviceID, amount); err != nil {
+		if err := tx.Rollback(); err != nil {
+			return fmt.Errorf("rolling transaction back: %w", err)
+		}
+		return fmt.Errorf("creating a service report entry: %w", err)
 	}
 
 	if err := tx.Commit(); err != nil {

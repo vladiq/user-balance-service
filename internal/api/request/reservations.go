@@ -51,3 +51,18 @@ func (r *CancelReservation) Bind(req *http.Request) error {
 	}
 	return nil
 }
+
+type ConfirmReservation struct {
+	ID uuid.UUID `json:"id"`
+}
+
+func (r *ConfirmReservation) Bind(req *http.Request) error {
+	reservationIDParam := chi.URLParam(req, "reservationID")
+
+	if reservationID, err := uuid.Parse(reservationIDParam); err != nil {
+		return fmt.Errorf("binding body: %w", err)
+	} else {
+		r.ID = reservationID
+	}
+	return nil
+}

@@ -25,3 +25,7 @@ func (m Reservation) MakeCreateReservationEntity(r request.CreateReservation) do
 func (m Reservation) MakeCancelReservationEntity(r request.CancelReservation) domain.Reservation {
 	return domain.Reservation{ID: r.ID}
 }
+
+func (m Reservation) MakeConfirmReservationEntity(r request.ConfirmReservation) domain.Reservation {
+	return domain.Reservation{ID: r.ID}
+}

@@ -12,5 +12,4 @@ type Reservation struct {
 	OrderID   uuid.UUID
 	Amount    float64
 	CreatedAt time.Time
-	ClosedAt  time.Time
 }

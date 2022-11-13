@@ -10,7 +10,8 @@ import (
 
 type reservationsRepo interface {
 	Create(ctx context.Context, entity domain.Reservation) error
-	Delete(ctx context.Context, entity domain.Reservation) error
+	Cancel(ctx context.Context, entity domain.Reservation) error
+	Confirm(ctx context.Context, entity domain.Reservation) error
 }
 
 type reservations struct {
@@ -27,5 +28,9 @@ func (s *reservations) CreateReservation(ctx context.Context, request request.Cr
 }
 
 func (s *reservations) CancelReservation(ctx context.Context, request request.CancelReservation) error {
-	return s.repo.Delete(ctx, s.mapper.MakeCancelReservationEntity(request))
+	return s.repo.Cancel(ctx, s.mapper.MakeCancelReservationEntity(request))
+}
+
+func (s *reservations) ConfirmReservation(ctx context.Context, request request.ConfirmReservation) error {
+	return s.repo.Confirm(ctx, s.mapper.MakeConfirmReservationEntity(request))
 }

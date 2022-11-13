@@ -36,16 +36,18 @@ func GetAccount(ctx context.Context, tx *sql.Tx, userID uuid.UUID) (*domain.Acco
 }
 
 const createAccountQuery = `
-	insert into accounts(balance) values ($1)
+	INSERT INTO accounts(balance) values ($1) RETURNING id
 `
 
-func CreateAccount(ctx context.Context, tx *sql.Tx, amount float64) error {
-	_, err := tx.ExecContext(ctx, createAccountQuery, amount)
-	if err != nil {
-		return fmt.Errorf("executing account creation query: %w", err)
+func CreateAccount(ctx context.Context, tx *sql.Tx, amount float64) (uuid.UUID, error) {
+	var accountID uuid.UUID
+
+	row := tx.QueryRowContext(ctx, createAccountQuery, amount)
+	if err := row.Scan(&accountID); err != nil {
+		return uuid.UUID{}, fmt.Errorf("executing account creation query: %w", err)
 	}
 
-	return nil
+	return accountID, nil
 }
 
 const depositFundsQuery = `

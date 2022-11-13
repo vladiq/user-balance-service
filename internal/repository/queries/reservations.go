@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+
 	"github.com/google/uuid"
 )
 
@@ -19,34 +20,23 @@ func CreateReservation(ctx context.Context, tx *sql.Tx, accountID, serviceID, or
 	return nil
 }
 
-const getReservationDataQuery = `
-	SELECT r.account_id, r.amount FROM reservations r WHERE r.id = $1
+const deleteReservationQuery = `
+	DELETE FROM reservations r WHERE r.id = $1 RETURNING r.account_id, r.service_id, r.amount;
 `
 
-func GetReservationData(ctx context.Context, tx *sql.Tx, id uuid.UUID) (uuid.UUID, float64, error) {
+func DeleteReservation(ctx context.Context, tx *sql.Tx, id uuid.UUID) (uuid.UUID, uuid.UUID, float64, error) {
 	var (
 		accountID string
+		serviceID string
 		amount    float64
 	)
-
-	row := tx.QueryRowContext(ctx, getReservationDataQuery, id)
-	if err := row.Scan(&accountID, &amount); err != nil {
-		return uuid.UUID{}, 0, fmt.Errorf("executing query to get account data from a reservation: %w", err)
+	row := tx.QueryRowContext(ctx, deleteReservationQuery, id)
+	if err := row.Scan(&accountID, &serviceID, &amount); err != nil {
+		return uuid.UUID{}, uuid.UUID{}, 0, fmt.Errorf("executing query to delete a reservation: %w", err)
 	}
 
 	accID, _ := uuid.Parse(accountID)
+	srvcID, _ := uuid.Parse(serviceID)
 
-	return accID, amount, nil
-}
-
-const deleteReservationQuery = `
-	DELETE FROM reservations r WHERE r.id = $1;
-`
-
-func DeleteReservation(ctx context.Context, tx *sql.Tx, id uuid.UUID) error {
-	if _, err := tx.ExecContext(ctx, deleteReservationQuery, id); err != nil {
-		return fmt.Errorf("executing query to delete a reservation: %w", err)
-	}
-
-	return nil
+	return accID, srvcID, amount, nil
 }

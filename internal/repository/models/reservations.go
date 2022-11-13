@@ -14,7 +14,6 @@ type Reservations struct {
 	OrderID   uuid.UUID `db:"order_id"`
 	Amount    float64   `db:"amount"`
 	CreatedAt time.Time `db:"created_at"`
-	ClosedAt  time.Time `db:"closed_at"`
 }
 
 func (dto *Reservations) Entity() *domain.Reservation {
@@ -25,7 +24,6 @@ func (dto *Reservations) Entity() *domain.Reservation {
 		OrderID:   dto.OrderID,
 		Amount:    dto.Amount,
 		CreatedAt: dto.CreatedAt,
-		ClosedAt:  dto.ClosedAt,
 	}
 	return r
 }

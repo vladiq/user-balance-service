@@ -49,13 +49,15 @@ func main() {
 
 	accountRepo := repository.NewAccountRepository(dbConn)
 	reservationRepo := repository.NewReservationRepository(dbConn)
-	//transactionRepo := repository.NewTransferRepository(dbConn)
+	transferRepo := repository.NewTransferRepository(dbConn)
 
 	reservationsService := service.NewReservations(reservationRepo)
 	accountsService := service.NewAccounts(accountRepo)
+	transfersService := service.NewTransfers(transferRepo)
 
 	reservationsHandler := handlers.NewReservations(reservationsService)
 	accountsHandler := handlers.NewAccounts(accountsService)
+	transfersHandler := handlers.NewTransfers(transfersService)
 
 	router := chi.NewRouter()
 
@@ -67,6 +69,7 @@ func main() {
 	router.Route(cfg.Server.BasePath, func(r chi.Router) {
 		r.Mount("/reservations", reservationsHandler.Routes())
 		r.Mount("/accounts", accountsHandler.Routes())
+		r.Mount("/transfers", transfersHandler.Routes())
 	})
 
 	httpserver.RunServer(cfg, logger, router)

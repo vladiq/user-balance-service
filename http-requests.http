@@ -2,7 +2,7 @@ POST http://localhost:7000/balance-service/accounts
 Content-Type: application/json
 
 {
-  "amount": 1234
+  "amount": 9999999
 }
 
 ###
@@ -16,7 +16,7 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:7000/balance-service/accounts/ffa39862-f4ce-4bb1-8f30-ec1aae86c41b
+GET http://localhost:7000/balance-service/accounts/982b96e5-7f14-4860-9cd3-50ac19688790
 Accept: application/json
 
 ###
@@ -25,8 +25,18 @@ PUT http://localhost:7000/balance-service/accounts/withdraw
 Accept: application/json
 
 {
-  "id": "194ce563-18fd-46e5-bf00-db3b9e0c785b",
-  "amount": 10
+  "id": "2c4e6e1a-a376-4db6-85e8-adff5a1a8471",
+  "amount": 1
+}
+
+###
+
+PUT http://localhost:7000/balance-service/accounts/deposit
+Accept: application/json
+
+{
+  "id": "2c4e6e1a-a376-4db6-85e8-adff5a1a8471",
+  "amount": 0.50
 }
 
 ###
@@ -35,11 +45,30 @@ POST http://localhost:7000/balance-service/reservations
 Content-Type: application/json
 
 {
-  "user_id": "497540a7-4d96-41da-9c6b-7a2ad3daa998",
-  "service_id": "497540a7-4d96-41da-9c6b-7a2ad3daa998",
-  "order_id": "497540a7-4d96-41da-9c6b-7a2ad3daa998",
-  "amount": 1
+  "user_id": "982b96e5-7f14-4860-9cd3-50ac19688790",
+  "service_id": "982b96e5-7f14-4860-9cd3-50ac19688790",
+  "order_id": "982b96e5-7f14-4860-9cd3-50ac19688790",
+  "amount": 34
 }
 
 ###
-DELETE http://localhost:7000/balance-service/reservations/f9d15097-7114-46dc-91bc-a7267def420d
+
+DELETE http://localhost:7000/balance-service/reservations/cancel-reservation/afdbd325-3d6c-4b20-985a-af039ef9adeb
+Content-Type: application/json
+
+###
+
+DELETE http://localhost:7000/balance-service/reservations/confirm-reservation/5c0c4cd7-5991-46c7-9785-8b7b86fc284a
+Content-Type: application/json
+
+
+###
+
+POST http://localhost:7000/balance-service/transfers
+Content-Type: application/json
+
+{
+  "to_id": "d570a8bf-d735-45b2-acdc-6d2c3b737110",
+  "from_id": "2c4e6e1a-a376-4db6-85e8-adff5a1a8471",
+  "amount": 0.30
+}

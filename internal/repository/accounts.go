@@ -58,11 +58,26 @@ func (r *accountRepository) CreateAccount(ctx context.Context, entity domain.Acc
 		return fmt.Errorf("beginning transaction: %w", err)
 	}
 
-	if err := queries.CreateAccount(ctx, tx, entity.Balance); err != nil {
+	accountID, err := queries.CreateAccount(ctx, tx, entity.Balance)
+	if err != nil {
 		if err := tx.Rollback(); err != nil {
 			return fmt.Errorf("rolling transaction back: %w", err)
 		}
 		return fmt.Errorf("executing create account query: %w", err)
+	}
+
+	if err := queries.AddTransferData(
+		ctx,
+		tx,
+		accountID,
+		true,
+		entity.Balance,
+		"merchant deposit on account creation",
+	); err != nil {
+		if err := tx.Rollback(); err != nil {
+			return fmt.Errorf("rolling transaction back: %w", err)
+		}
+		return fmt.Errorf("adding a money transfer record: %w", err)
 	}
 
 	if err := tx.Commit(); err != nil {
@@ -90,6 +105,20 @@ func (r *accountRepository) DepositFunds(ctx context.Context, entity domain.Acco
 		return fmt.Errorf("executing create account query: %w", err)
 	}
 
+	if err := queries.AddTransferData(
+		ctx,
+		tx,
+		entity.ID,
+		true,
+		entity.Balance,
+		"merchant deposit",
+	); err != nil {
+		if err := tx.Rollback(); err != nil {
+			return fmt.Errorf("rolling transaction back: %w", err)
+		}
+		return fmt.Errorf("adding a money transfer record: %w", err)
+	}
+
 	if err := tx.Commit(); err != nil {
 		return fmt.Errorf("committing transaction: %w", err)
 	}
@@ -113,6 +142,20 @@ func (r *accountRepository) WithdrawFunds(ctx context.Context, entity domain.Acc
 			return fmt.Errorf("rolling transaction back: %w", err)
 		}
 		return fmt.Errorf("executing create account query: %w", err)
+	}
+
+	if err := queries.AddTransferData(
+		ctx,
+		tx,
+		entity.ID,
+		true,
+		entity.Balance,
+		"merchant withdrawal",
+	); err != nil {
+		if err := tx.Rollback(); err != nil {
+			return fmt.Errorf("rolling transaction back: %w", err)
+		}
+		return fmt.Errorf("adding a money transfer record: %w", err)
 	}
 
 	if err := tx.Commit(); err != nil {

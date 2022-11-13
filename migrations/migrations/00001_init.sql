@@ -7,7 +7,7 @@ CREATE TABLE "accounts" (
     CONSTRAINT balance_non_negative CHECK (balance >= 0)
 );
 
-CREATE TABLE "transactions" (
+CREATE TABLE "transfers" (
     "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
     "account_id" uuid REFERENCES "accounts" ("id"),
     "is_accrual" bool NOT NULL, -- whether to add or remove money from balance. If true, money is added to balance
@@ -25,19 +25,21 @@ CREATE TABLE "reservations" (
     "order_id" uuid NOT NULL,
     "amount" DECIMAL(15, 2) NOT NULL,
     "created_at" timestamptz NOT NULL DEFAULT (now()),
-    "closed_at" timestamptz,
 
     CONSTRAINT amount_non_negative CHECK (amount >= 0)
 );
 
 CREATE TABLE "reports" (
     "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
-    "account_id" uuid NOT NULL REFERENCES "accounts" ("id"),
-    "created_at" timestamptz NOT NULL DEFAULT (now())
+    "service_id" uuid,
+    "amount" DECIMAL(15, 2) NOT NULL,
+    "created_at" timestamptz NOT NULL DEFAULT (now()),
+
+    CONSTRAINT amount_non_negative CHECK (amount >= 0)
 );
 
 -- +goose Down
 DROP TABLE IF EXISTS accounts CASCADE;
-DROP TABLE IF EXISTS transactions CASCADE;
+DROP TABLE IF EXISTS transfers CASCADE;
 DROP TABLE IF EXISTS reservations CASCADE;
 DROP TABLE IF EXISTS reports CASCADE;
