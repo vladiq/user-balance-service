@@ -3,11 +3,11 @@ package request
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/go-chi/chi/v5"
-	"github.com/google/uuid"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/go-ozzo/ozzo-validation"
+	"github.com/google/uuid"
 )
 
 type CreateReservation struct {

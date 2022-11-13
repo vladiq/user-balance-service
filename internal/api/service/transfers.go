@@ -2,10 +2,10 @@ package service
 
 import (
 	"context"
-	"github.com/vladiq/user-balance-service/internal/api/response"
 
 	"github.com/vladiq/user-balance-service/internal/api/mapper"
 	"github.com/vladiq/user-balance-service/internal/api/request"
+	"github.com/vladiq/user-balance-service/internal/api/response"
 	"github.com/vladiq/user-balance-service/internal/domain"
 )
 

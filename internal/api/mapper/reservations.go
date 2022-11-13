@@ -1,9 +1,10 @@
 package mapper
 
 import (
-	"github.com/google/uuid"
 	"github.com/vladiq/user-balance-service/internal/api/request"
 	"github.com/vladiq/user-balance-service/internal/domain"
+
+	"github.com/google/uuid"
 )
 
 type Reservation struct {

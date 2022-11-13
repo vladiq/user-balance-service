@@ -3,11 +3,12 @@ package request
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/go-chi/chi/v5"
-	validation "github.com/go-ozzo/ozzo-validation"
-	"github.com/google/uuid"
 	"net/http"
 	"strconv"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-ozzo/ozzo-validation"
+	"github.com/google/uuid"
 )
 
 type MakeTransfer struct {

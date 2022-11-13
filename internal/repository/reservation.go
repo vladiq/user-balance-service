@@ -7,9 +7,9 @@ import (
 
 	"github.com/vladiq/user-balance-service/internal/constant"
 	"github.com/vladiq/user-balance-service/internal/domain"
+	"github.com/vladiq/user-balance-service/internal/repository/queries"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/vladiq/user-balance-service/internal/repository/queries"
 )
 
 type reservationRepository struct {

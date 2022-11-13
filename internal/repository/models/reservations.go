@@ -3,8 +3,9 @@ package models
 import (
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/vladiq/user-balance-service/internal/domain"
+
+	"github.com/google/uuid"
 )
 
 type Reservations struct {

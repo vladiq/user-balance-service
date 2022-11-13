@@ -4,8 +4,9 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/go-chi/render"
 	"github.com/vladiq/user-balance-service/internal/constant"
+
+	"github.com/go-chi/render"
 )
 
 func RenderError(w http.ResponseWriter, r *http.Request, err error) {
