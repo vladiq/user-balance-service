@@ -5,9 +5,10 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/google/uuid"
 	"github.com/vladiq/user-balance-service/internal/domain"
 	"github.com/vladiq/user-balance-service/internal/repository/models"
+
+	"github.com/google/uuid"
 )
 
 const getUserQuery = `
@@ -51,8 +52,8 @@ const depositFundsQuery = `
 	UPDATE accounts SET balance = balance + $1 WHERE id = $2
 `
 
-func DepositFunds(ctx context.Context, tx *sql.Tx, userID uuid.UUID, amount float64) error {
-	_, err := tx.ExecContext(ctx, depositFundsQuery, amount, userID.String())
+func DepositFunds(ctx context.Context, tx *sql.Tx, accountID uuid.UUID, amount float64) error {
+	_, err := tx.ExecContext(ctx, depositFundsQuery, amount, accountID.String())
 	if err != nil {
 		return fmt.Errorf("executing query to deposit funds to an account: %w", err)
 	}
@@ -64,9 +65,8 @@ const withdrawFundsQuery = `
 	UPDATE accounts SET balance = balance - $1 WHERE id = $2
 `
 
-func WithdrawFunds(ctx context.Context, tx *sql.Tx, userID uuid.UUID, amount float64) error {
-
-	_, err := tx.ExecContext(ctx, withdrawFundsQuery, amount, userID.String())
+func WithdrawFunds(ctx context.Context, tx *sql.Tx, accountID uuid.UUID, amount float64) error {
+	_, err := tx.ExecContext(ctx, withdrawFundsQuery, amount, accountID.String())
 	if err != nil {
 		return fmt.Errorf("executing query to withdraw money from an account: %w", err)
 	}

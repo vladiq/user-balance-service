@@ -43,3 +43,43 @@ func (r *GetAccount) Bind(req *http.Request) error {
 
 	return nil
 }
+
+type DepositFunds struct {
+	ID     uuid.UUID `json:"id"`
+	Amount float64   `json:"amount"`
+}
+
+func (df *DepositFunds) Bind(req *http.Request) error {
+	if err := json.NewDecoder(req.Body).Decode(df); err != nil {
+		return fmt.Errorf("binding body: %w", err)
+	}
+	return df.validate()
+}
+
+func (df *DepositFunds) validate() error {
+	if err := validation.Validate(df.Amount, validation.Required, validation.Min(float64(0))); err != nil {
+		return fmt.Errorf("validating amount: %w", err)
+	}
+	// TODO: add validation of uuid correctness to all validate() methods!!!
+	return nil
+}
+
+type WithdrawFunds struct {
+	ID     uuid.UUID `json:"id"`
+	Amount float64   `json:"amount"`
+}
+
+func (wf *WithdrawFunds) Bind(req *http.Request) error {
+	if err := json.NewDecoder(req.Body).Decode(wf); err != nil {
+		return fmt.Errorf("binding body: %w", err)
+	}
+	return wf.validate()
+}
+
+func (wf *WithdrawFunds) validate() error {
+	if err := validation.Validate(wf.Amount, validation.Required, validation.Min(float64(0))); err != nil {
+		return fmt.Errorf("validating amount: %w", err)
+	}
+	// TODO: add validation of uuid correctness to all validate() methods!!!
+	return nil
+}

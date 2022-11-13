@@ -2,10 +2,10 @@ package handlers
 
 import (
 	"context"
-	"github.com/vladiq/user-balance-service/internal/api/response"
 	"net/http"
 
 	"github.com/vladiq/user-balance-service/internal/api/request"
+	"github.com/vladiq/user-balance-service/internal/api/response"
 	"github.com/vladiq/user-balance-service/internal/utils"
 
 	"github.com/go-chi/chi/v5"
@@ -15,6 +15,8 @@ import (
 type accountsService interface {
 	CreateAccount(ctx context.Context, request request.CreateAccount) error
 	GetAccount(ctx context.Context, request request.GetAccount) (response.GetAccount, error)
+	DepositFunds(ctx context.Context, request request.DepositFunds) error
+	WithdrawFunds(ctx context.Context, request request.WithdrawFunds) error
 }
 
 type accounts struct {
@@ -28,8 +30,10 @@ func NewAccounts(service accountsService) *accounts {
 func (h *accounts) Routes() *chi.Mux {
 	r := chi.NewRouter()
 
-	r.Post("/", h.createAccount)
 	r.Get("/{accountID}", h.getAccount)
+	r.Post("/", h.createAccount)
+	r.Put("/deposit", h.depositFunds)
+	r.Put("/withdraw", h.withdrawFunds)
 
 	return r
 }
@@ -67,4 +71,38 @@ func (h *accounts) getAccount(w http.ResponseWriter, r *http.Request) {
 		render.Status(r, http.StatusOK)
 		render.JSON(w, r, account)
 	}
+}
+
+func (h *accounts) depositFunds(w http.ResponseWriter, r *http.Request) {
+	var req request.DepositFunds
+
+	if err := req.Bind(r); err != nil {
+		render.Status(r, http.StatusBadRequest)
+		render.PlainText(w, r, err.Error())
+		return
+	}
+
+	if err := h.service.DepositFunds(r.Context(), req); err != nil {
+		utils.RenderError(w, r, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *accounts) withdrawFunds(w http.ResponseWriter, r *http.Request) {
+	var req request.WithdrawFunds
+
+	if err := req.Bind(r); err != nil {
+		render.Status(r, http.StatusBadRequest)
+		render.PlainText(w, r, err.Error())
+		return
+	}
+
+	if err := h.service.WithdrawFunds(r.Context(), req); err != nil {
+		utils.RenderError(w, r, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }

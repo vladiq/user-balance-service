@@ -9,15 +9,19 @@ import (
 type Reservation struct {
 }
 
-func (m Reservation) MakeCreateReservationEntity(request request.CreateReservation) domain.Reservation {
-	userID, _ := uuid.Parse(request.UserID)
-	serviceID, _ := uuid.Parse(request.ServiceID)
-	orderID, _ := uuid.Parse(request.OrderID)
+func (m Reservation) MakeCreateReservationEntity(r request.CreateReservation) domain.Reservation {
+	userID, _ := uuid.Parse(r.UserID)
+	serviceID, _ := uuid.Parse(r.ServiceID)
+	orderID, _ := uuid.Parse(r.OrderID)
 
 	return domain.Reservation{
 		AccountID: userID,
 		ServiceID: serviceID,
 		OrderID:   orderID,
-		Amount:    request.Amount,
+		Amount:    r.Amount,
 	}
+}
+
+func (m Reservation) MakeCancelReservationEntity(r request.CancelReservation) domain.Reservation {
+	return domain.Reservation{ID: r.ID}
 }

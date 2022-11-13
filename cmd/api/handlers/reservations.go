@@ -13,6 +13,7 @@ import (
 
 type reservationsService interface {
 	CreateReservation(ctx context.Context, request request.CreateReservation) error
+	CancelReservation(ctx context.Context, request request.CancelReservation) error
 }
 
 type reservations struct {
@@ -27,6 +28,7 @@ func (h *reservations) Routes() chi.Router {
 	r := chi.NewRouter()
 
 	r.Post("/", h.CreateReservation)
+	r.Delete("/{reservationID}", h.CancelReservation)
 
 	return r
 }
@@ -37,13 +39,30 @@ func (h *reservations) CreateReservation(w http.ResponseWriter, r *http.Request)
 	if err := req.Bind(r); err != nil {
 		render.Status(r, http.StatusBadRequest)
 		render.PlainText(w, r, err.Error())
-
 		return
 	}
 
 	if err := h.service.CreateReservation(r.Context(), req); err != nil {
 		utils.RenderError(w, r, err)
-
 		return
 	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *reservations) CancelReservation(w http.ResponseWriter, r *http.Request) {
+	var req request.CancelReservation
+
+	if err := req.Bind(r); err != nil {
+		render.Status(r, http.StatusBadRequest)
+		render.PlainText(w, r, err.Error())
+		return
+	}
+
+	if err := h.service.CancelReservation(r.Context(), req); err != nil {
+		utils.RenderError(w, r, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }

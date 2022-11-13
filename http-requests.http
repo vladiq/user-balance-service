@@ -21,11 +21,12 @@ Accept: application/json
 
 ###
 
-PUT http://localhost:7000/balance-service/accounts/ffa39862-f4ce-4bb1-8f30-ec1aae86c41b
+PUT http://localhost:7000/balance-service/accounts/withdraw
 Accept: application/json
 
 {
-  "amount": -114564564456
+  "id": "194ce563-18fd-46e5-bf00-db3b9e0c785b",
+  "amount": 10
 }
 
 ###
@@ -39,3 +40,6 @@ Content-Type: application/json
   "order_id": "497540a7-4d96-41da-9c6b-7a2ad3daa998",
   "amount": 1
 }
+
+###
+DELETE http://localhost:7000/balance-service/reservations/f9d15097-7114-46dc-91bc-a7267def420d

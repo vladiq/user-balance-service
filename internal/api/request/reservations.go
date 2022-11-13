@@ -3,6 +3,8 @@ package request
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 	"net/http"
 
 	"github.com/go-ozzo/ozzo-validation"
@@ -31,6 +33,21 @@ func (r *CreateReservation) validate() error {
 		validation.Field(&r.Amount, validation.Required, validation.Min(float64(0))),
 	); err != nil {
 		return fmt.Errorf("validating body: %w", err)
+	}
+	return nil
+}
+
+type CancelReservation struct {
+	ID uuid.UUID `json:"id"`
+}
+
+func (r *CancelReservation) Bind(req *http.Request) error {
+	reservationIDParam := chi.URLParam(req, "reservationID")
+
+	if reservationID, err := uuid.Parse(reservationIDParam); err != nil {
+		return fmt.Errorf("binding body: %w", err)
+	} else {
+		r.ID = reservationID
 	}
 	return nil
 }
