@@ -4,11 +4,15 @@ import (
 	"context"
 	"fmt"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/rs/zerolog"
 	"github.com/vladiq/user-balance-service/cmd/api/handlers"
 	"github.com/vladiq/user-balance-service/internal/api/service"
 	"github.com/vladiq/user-balance-service/internal/pkg/chilogger"
 	"github.com/vladiq/user-balance-service/internal/repository"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/vladiq/user-balance-service/internal/pkg/logging"
@@ -58,20 +62,49 @@ func main() {
 	reservationsHandler := handlers.NewReservations(reservationsService)
 	accountsHandler := handlers.NewAccounts(accountsService)
 
-	r := chi.NewRouter()
+	router := chi.NewRouter()
 
-	r.Use(middleware.RedirectSlashes)
-	r.Use(chilogger.LoggerMiddleware(&logger))
-	r.Use(middleware.Recoverer)
-	r.Use(middleware.Timeout(30 * time.Second))
+	router.Use(middleware.RedirectSlashes)
+	router.Use(chilogger.LoggerMiddleware(&logger))
+	router.Use(middleware.Recoverer)
+	router.Use(middleware.Timeout(30 * time.Second))
 
-	r.Route(cfg.Server.BasePath, func(r chi.Router) {
+	router.Route(cfg.Server.BasePath, func(r chi.Router) {
 		r.Mount("/reservations", reservationsHandler.Routes())
 		r.Mount("/accounts", accountsHandler.Routes())
 	})
-	//r.Mount(cfg.Server.BasePath, reservationsHandler.Routes())
-	//r.Mount()
 
-	logger.Info().Msgf("Starting service at %s:%d%s", cfg.Server.Host, cfg.Server.Port, cfg.Server.BasePath)
-	http.ListenAndServe(fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port), r)
+	runServer(cfg, logger, router)
+	//http.ListenAndServe(fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port), r)
+}
+
+var serverShutdownTimeout = 5 * time.Second
+
+func runServer(cfg config.Config, logger zerolog.Logger, router chi.Router) {
+	srv := &http.Server{
+		Addr:         fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port),
+		Handler:      router,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+	}
+
+	gracefulShutdown := make(chan os.Signal)
+	signal.Notify(gracefulShutdown, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			logger.Fatal().Err(err).Msg("Server listen error")
+		}
+	}()
+	logger.Info().Msgf("Started service at %s:%d%s", cfg.Server.Host, cfg.Server.Port, cfg.Server.BasePath)
+
+	<-gracefulShutdown
+	logger.Info().Msg("Stopping server")
+
+	ctx, cancel := context.WithTimeout(context.Background(), serverShutdownTimeout)
+	defer cancel()
+
+	if err := srv.Shutdown(ctx); err != nil {
+		logger.Fatal().Err(err).Msg("Server shutdown failed")
+	}
 }
