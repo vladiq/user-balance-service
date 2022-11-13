@@ -60,7 +60,7 @@ func (df *DepositFunds) validate() error {
 	if err := validation.Validate(df.Amount, validation.Required, validation.Min(float64(0))); err != nil {
 		return fmt.Errorf("validating amount: %w", err)
 	}
-	// TODO: add validation of uuid correctness to all validate() methods!!!
+	// TODO add validation of uuid correctness to all validate() methods!!!
 	return nil
 }
 

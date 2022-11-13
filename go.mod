@@ -6,6 +6,7 @@ require (
 	github.com/go-chi/chi/v5 v5.0.7
 	github.com/go-chi/render v1.0.2
 	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
+	github.com/gocarina/gocsv v0.0.0-20221105105431-c8ef78125b99
 	github.com/google/uuid v1.3.0
 	github.com/jackc/pgx/v4 v4.17.2
 	github.com/jmoiron/sqlx v1.3.5

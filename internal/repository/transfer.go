@@ -95,3 +95,29 @@ func (r *transferRepository) MakeTransaction(ctx context.Context, entity domain.
 	}
 	return nil
 }
+
+func (r *transferRepository) GetUserMonthlyReport(ctx context.Context, entity domain.Transfer) ([]*domain.Transfer, error) {
+	opts := sql.TxOptions{
+		ReadOnly:  true,
+		Isolation: sql.LevelSerializable,
+	}
+
+	tx, err := r.DB.BeginTx(ctx, &opts)
+	if err != nil {
+		return nil, fmt.Errorf("beginning transaction: %w", err)
+	}
+
+	transferEntries, err := queries.GetTransfers(ctx, tx, entity)
+	if err != nil {
+		if err := tx.Rollback(); err != nil {
+			return nil, fmt.Errorf("rolling transaction back: %w", err)
+		}
+		return nil, fmt.Errorf("getting account: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, fmt.Errorf("committing transaction: %w", err)
+	}
+
+	return transferEntries, nil
+}
