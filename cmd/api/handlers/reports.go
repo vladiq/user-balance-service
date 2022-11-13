@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"github.com/go-chi/render"
 	"net/http"
 
 	"github.com/vladiq/user-balance-service/internal/api/request"
@@ -30,23 +31,13 @@ func (h *reports) Routes() *chi.Mux {
 }
 
 func (h *reports) getServiceReport(w http.ResponseWriter, r *http.Request) {
+	var req request.GetServiceReport
 
+	if err := req.Bind(r); err != nil {
+		render.Status(r, http.StatusBadRequest)
+		render.PlainText(w, r, err.Error())
+		return
+	}
+
+	//////// csv
 }
-
-//func (h *accounts) getAccount(w http.ResponseWriter, r *http.Request) {
-//	var req request.GetAccount
-//
-//	if err := req.Bind(r); err != nil {
-//		render.Status(r, http.StatusBadRequest)
-//		render.PlainText(w, r, err.Error())
-//		return
-//	}
-//
-//	if account, err := h.service.GetAccount(r.Context(), req); err != nil {
-//		utils.RenderError(w, r, err)
-//		return
-//	} else {
-//		render.Status(r, http.StatusOK)
-//		render.JSON(w, r, account)
-//	}
-//}

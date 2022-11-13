@@ -2,12 +2,12 @@ package main
 
 import (
 	"context"
-	"github.com/vladiq/user-balance-service/internal/pkg/httpserver"
 	"time"
 
 	"github.com/vladiq/user-balance-service/cmd/api/handlers"
 	"github.com/vladiq/user-balance-service/internal/api/service"
 	"github.com/vladiq/user-balance-service/internal/pkg/chilogger"
+	"github.com/vladiq/user-balance-service/internal/pkg/httpserver"
 	"github.com/vladiq/user-balance-service/internal/pkg/logging"
 	"github.com/vladiq/user-balance-service/internal/repository"
 	"github.com/vladiq/user-balance-service/pkg/config"
@@ -19,6 +19,8 @@ import (
 )
 
 const configYML = "config.yml"
+
+var gatewayTimeout = 30 * time.Second
 
 func main() {
 	if err := config.ReadConfigYML(configYML); err != nil {
@@ -38,12 +40,11 @@ func main() {
 		Msgf("Starting service: %s", cfg.Project.Name)
 
 	logger.Trace().Str("DSN", cfg.DB.DSN).Msg("Connecting to database")
-
 	initCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	dbConn, err := postgres.New(initCtx, &cfg.DB)
 	if err != nil {
-		log.Fatal().Err(err).Msg("sql.Open() error")
+		log.Fatal().Err(err).Msg("error while connecting to database")
 	}
 	defer dbConn.Close()
 
@@ -60,11 +61,10 @@ func main() {
 	transfersHandler := handlers.NewTransfers(transfersService)
 
 	router := chi.NewRouter()
-
 	router.Use(middleware.RedirectSlashes)
 	router.Use(chilogger.LoggerMiddleware(&logger))
 	router.Use(middleware.Recoverer)
-	router.Use(middleware.Timeout(30 * time.Second))
+	router.Use(middleware.Timeout(gatewayTimeout))
 
 	router.Route(cfg.Server.BasePath, func(r chi.Router) {
 		r.Mount("/reservations", reservationsHandler.Routes())
