@@ -1,10 +1,16 @@
 package response
 
-import "time"
+import (
+	"github.com/google/uuid"
+	"github.com/vladiq/user-balance-service/internal/domain"
+	"net/http"
+)
 
-type GetUserMonthlyReport struct {
-	Timestamp time.Time
-	IsAccrual bool
-	Info      string
-	Amount    float64
+type GetUserTransfers struct {
+	Items      []*domain.Transfer `json:"items"`
+	NextPageID uuid.UUID          `json:"next_page_id,omitempty"`
+}
+
+func (g *GetUserTransfers) Render(_ http.ResponseWriter, _ *http.Request) error {
+	return nil
 }

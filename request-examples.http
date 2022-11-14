@@ -2,7 +2,7 @@ POST http://localhost:7000/balance-service/accounts
 Content-Type: application/json
 
 {
-  "amount": 9999999
+  "amount": 100000.10
 }
 
 ###
@@ -46,18 +46,18 @@ Content-Type: application/json
   "user_id": "982b96e5-7f14-4860-9cd3-50ac19688790",
   "service_id": "982b96e5-7f14-4860-9cd3-50ac19688790",
   "order_id": "982b96e5-7f14-4860-9cd3-50ac19688790",
-  "amount": 34
+  "amount": 1000
 }
 
 ###
 
-DELETE http://localhost:7000/balance-service/reservations/cancel-reservation/afdbd325-3d6c-4b20-985a-af039ef9adeb
+DELETE http://localhost:7000/balance-service/reservations/cancel-reservation/0602e6cf-ec04-4437-b2d1-4e8d6ae2f343
 
 ###
 
-DELETE http://localhost:7000/balance-service/reservations/confirm-reservation/5c0c4cd7-5991-46c7-9785-8b7b86fc284a
+DELETE http://localhost:7000/balance-service/reservations/confirm-reservation/543f04d3-d4d5-4d95-bfb1-2b15bd7292a3
 
 ###
 
-GET http://localhost:7000/balance-service/transfers/reports/2c4e6e1a-a376-4db6-85e8-adff5a1a8471?year=2022&month=11
-Accept: text/csv
+GET http://localhost:7000/balance-service/transfers/reports/2c4e6e1a-a376-4db6-85e8-adff5a1a8471?order-by=amount
+Accept: application/json

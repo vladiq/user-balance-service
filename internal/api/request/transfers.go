@@ -2,14 +2,13 @@ package request
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
-	"net/http"
-	"strconv"
-
 	"github.com/go-chi/chi/v5"
 	"github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
 	"github.com/google/uuid"
+	"net/http"
 )
 
 type MakeTransfer struct {
@@ -41,13 +40,12 @@ func (r *MakeTransfer) validate() error {
 	return nil
 }
 
-type UserMonthlyReport struct {
+type GetUserTransfers struct {
 	AccountID uuid.UUID
-	Year      int
-	Month     int
+	OrderBy   string
 }
 
-func (r *UserMonthlyReport) Bind(req *http.Request) error {
+func (r *GetUserTransfers) Bind(req *http.Request) error {
 	accIDParam := chi.URLParam(req, "accountID")
 	accID, err := uuid.Parse(accIDParam)
 	if err != nil {
@@ -55,28 +53,19 @@ func (r *UserMonthlyReport) Bind(req *http.Request) error {
 	}
 	r.AccountID = accID
 
-	year, err := strconv.Atoi(req.URL.Query().Get("year"))
-	if err != nil {
-		return fmt.Errorf("getting year from query: %w", err)
-	}
-	r.Year = year
-
-	month, err := strconv.Atoi(req.URL.Query().Get("month"))
-	if err != nil {
-		return fmt.Errorf("getting month from query: %w", err)
-	}
-	r.Month = month
+	orderBy := req.URL.Query().Get("order-by")
+	r.OrderBy = orderBy
 
 	return r.validate()
 }
 
-func (r *UserMonthlyReport) validate() error {
-	if err := validation.Validate(r.Month, validation.Required, validation.Max(12)); err != nil {
-		return fmt.Errorf("validating month: %w", err)
-	}
-
+func (r *GetUserTransfers) validate() error {
 	if err := validation.Validate(r.AccountID, validation.Required, is.UUID); err != nil {
 		return fmt.Errorf("validating AccountID: %w", err)
+	}
+
+	if r.OrderBy != "" && r.OrderBy != "amount" && r.OrderBy != "date" {
+		return errors.New("wrong order-by key format: use date,amount")
 	}
 
 	return nil

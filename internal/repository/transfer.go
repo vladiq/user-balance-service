@@ -9,6 +9,7 @@ import (
 	"github.com/vladiq/user-balance-service/internal/domain"
 	"github.com/vladiq/user-balance-service/internal/repository/queries"
 
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -22,7 +23,7 @@ func NewTransferRepository(db *sqlx.DB) *transferRepository {
 	}
 }
 
-func (r *transferRepository) MakeTransaction(ctx context.Context, entity domain.Transaction) error {
+func (r *transferRepository) CreateTransfer(ctx context.Context, entity domain.Transaction) error {
 	opts := sql.TxOptions{
 		ReadOnly:  false,
 		Isolation: sql.LevelSerializable,
@@ -96,7 +97,7 @@ func (r *transferRepository) MakeTransaction(ctx context.Context, entity domain.
 	return nil
 }
 
-func (r *transferRepository) GetUserMonthlyReport(ctx context.Context, entity domain.Transfer) ([]*domain.Transfer, error) {
+func (r *transferRepository) GetTransfers(ctx context.Context, entity domain.Transfer, pageID uuid.UUID, orderBy string) ([]*domain.Transfer, uuid.UUID, error) {
 	opts := sql.TxOptions{
 		ReadOnly:  true,
 		Isolation: sql.LevelSerializable,
@@ -104,20 +105,20 @@ func (r *transferRepository) GetUserMonthlyReport(ctx context.Context, entity do
 
 	tx, err := r.DB.BeginTx(ctx, &opts)
 	if err != nil {
-		return nil, fmt.Errorf("beginning transaction: %w", err)
+		return nil, uuid.UUID{}, fmt.Errorf("beginning transaction: %w", err)
 	}
 
-	transferEntries, err := queries.GetTransfers(ctx, tx, entity)
+	transferEntries, nextPageID, err := queries.GetTransfers(ctx, tx, entity, pageID, orderBy)
 	if err != nil {
 		if err := tx.Rollback(); err != nil {
-			return nil, fmt.Errorf("rolling transaction back: %w", err)
+			return nil, uuid.UUID{}, fmt.Errorf("rolling transaction back: %w", err)
 		}
-		return nil, fmt.Errorf("getting account: %w", err)
+		return nil, uuid.UUID{}, fmt.Errorf("getting transfers: %w", err)
 	}
 
 	if err := tx.Commit(); err != nil {
-		return nil, fmt.Errorf("committing transaction: %w", err)
+		return nil, uuid.UUID{}, fmt.Errorf("committing transaction: %w", err)
 	}
 
-	return transferEntries, nil
+	return transferEntries, nextPageID, nil
 }

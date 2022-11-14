@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"github.com/google/uuid"
 
 	"github.com/vladiq/user-balance-service/internal/api/mapper"
 	"github.com/vladiq/user-balance-service/internal/api/request"
@@ -10,8 +11,8 @@ import (
 )
 
 type transfersRepo interface {
-	MakeTransaction(ctx context.Context, entity domain.Transaction) error
-	GetUserMonthlyReport(ctx context.Context, entity domain.Transfer) ([]*domain.Transfer, error)
+	CreateTransfer(ctx context.Context, entity domain.Transaction) error
+	GetTransfers(ctx context.Context, entity domain.Transfer, pageID uuid.UUID, orderBy string) ([]*domain.Transfer, uuid.UUID, error)
 }
 
 type transfers struct {
@@ -23,20 +24,17 @@ func NewTransfers(repo transfersRepo) *transfers {
 	return &transfers{repo: repo, mapper: mapper.Transfer{}}
 }
 
-func (s *transfers) MakeTransfer(ctx context.Context, request request.MakeTransfer) error {
-	return s.repo.MakeTransaction(ctx, s.mapper.MakeTransferEntity(request))
+func (s *transfers) MakeTransfer(ctx context.Context, r request.MakeTransfer) error {
+	return s.repo.CreateTransfer(ctx, s.mapper.MakeTransferEntity(r))
 }
 
-func (s *transfers) UserMonthlyReport(ctx context.Context, request request.UserMonthlyReport) ([]*response.GetUserMonthlyReport, error) {
-	entityResults, err := s.repo.GetUserMonthlyReport(ctx, s.mapper.UserMonthlyReport(request))
+func (s *transfers) GetTransfers(ctx context.Context, r request.GetUserTransfers, pageID uuid.UUID) (response.GetUserTransfers, error) {
+	orderBy := r.OrderBy
+	entityResults, nextPageID, err := s.repo.GetTransfers(ctx, s.mapper.UserMonthlyReport(r), pageID, orderBy)
 	if err != nil {
-		return nil, err
+		return response.GetUserTransfers{}, err
 	}
 
-	var responseResults []*response.GetUserMonthlyReport
-	for _, e := range entityResults {
-		responseResults = append(responseResults, s.mapper.EntityToReportEntry(*e))
-	}
-
+	responseResults := s.mapper.GetResponseMonthlyReport(entityResults, nextPageID)
 	return responseResults, nil
 }

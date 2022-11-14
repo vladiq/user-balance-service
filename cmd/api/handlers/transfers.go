@@ -2,20 +2,21 @@ package handlers
 
 import (
 	"context"
-	"github.com/vladiq/user-balance-service/internal/api/response"
+	"github.com/google/uuid"
+	m "github.com/vladiq/user-balance-service/internal/pkg/middleware"
 	"net/http"
 
 	"github.com/vladiq/user-balance-service/internal/api/request"
+	"github.com/vladiq/user-balance-service/internal/api/response"
 	"github.com/vladiq/user-balance-service/internal/utils"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
-	"github.com/gocarina/gocsv"
 )
 
 type transfersService interface {
 	MakeTransfer(ctx context.Context, request request.MakeTransfer) error
-	UserMonthlyReport(ctx context.Context, request request.UserMonthlyReport) ([]*response.GetUserMonthlyReport, error)
+	GetTransfers(ctx context.Context, request request.GetUserTransfers, pageID uuid.UUID) (response.GetUserTransfers, error)
 }
 
 type transfers struct {
@@ -29,9 +30,8 @@ func NewTransfers(service transfersService) *transfers {
 func (h *transfers) Routes() *chi.Mux {
 	r := chi.NewRouter()
 
-	// /report/dfjfk-2343223-edd324?year=2022&month=03
-	r.Get("/reports/{accountID}", h.getUserMonthlyReport)
 	r.Post("/", h.makeTransfer)
+	r.With(m.Pagination).Get("/reports/{accountID}", h.listUserTransfers)
 
 	return r
 }
@@ -53,8 +53,8 @@ func (h *transfers) makeTransfer(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
-func (h *transfers) getUserMonthlyReport(w http.ResponseWriter, r *http.Request) {
-	var req request.UserMonthlyReport
+func (h *transfers) listUserTransfers(w http.ResponseWriter, r *http.Request) {
+	var req request.GetUserTransfers
 
 	if err := req.Bind(r); err != nil {
 		render.Status(r, http.StatusBadRequest)
@@ -62,17 +62,13 @@ func (h *transfers) getUserMonthlyReport(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	reportEntries, err := h.service.UserMonthlyReport(r.Context(), req)
+	pageID := r.Context().Value(m.PageIDKey)
+
+	userTransfers, err := h.service.GetTransfers(r.Context(), req, pageID.(uuid.UUID))
 	if err != nil {
 		utils.RenderError(w, r, err)
 		return
 	}
 
-	w.Header().Set("Content-Type", "text/csv")
-	w.Header().Add("Content-Disposition", `attachment; filename="user-report.csv"`)
-	if err := gocsv.Marshal(reportEntries, w); err != nil {
-		render.Status(r, http.StatusInternalServerError)
-		render.PlainText(w, r, err.Error())
-		return
-	}
+	render.JSON(w, r, userTransfers)
 }
