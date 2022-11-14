@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"fmt"
+	httpSwagger "github.com/swaggo/http-swagger"
 	"time"
 
 	"github.com/vladiq/user-balance-service/cmd/api/handlers"
@@ -16,12 +18,20 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/rs/zerolog/log"
+
+	_ "github.com/vladiq/user-balance-service/docs"
 )
 
 const configYML = "config.yml"
 
 var gatewayTimeout = 30 * time.Second
 
+// @title       User Balance Microservice
+// @version 1.0
+// @description A microservice for user balance management, money transfer and report generation.
+// @contact.name Vladislav Kosogorov
+// @host     localhost:7000
+// @BasePath /balance-service
 func main() {
 	if err := config.ReadConfigYML(configYML); err != nil {
 		log.Fatal().Err(err).Msg("Failed config initialization")
@@ -66,10 +76,15 @@ func main() {
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.Timeout(gatewayTimeout))
 
-	router.Route(cfg.Server.BasePath, func(r chi.Router) {
-		r.Mount("/reservations", reservationsHandler.Routes())
-		r.Mount("/accounts", accountsHandler.Routes())
-		r.Mount("/transfers", transfersHandler.Routes())
+	swaggerURL := fmt.Sprintf("http://%s:%d%s/swagger/doc.json", cfg.Server.Host, cfg.Server.Port, cfg.Server.BasePath)
+	router.Get(cfg.Server.BasePath+"/swagger/*", httpSwagger.Handler(
+		httpSwagger.URL(swaggerURL),
+	))
+
+	router.Route(cfg.Server.BasePath, func(router chi.Router) {
+		router.Mount("/reservations", reservationsHandler.Routes())
+		router.Mount("/accounts", accountsHandler.Routes())
+		router.Mount("/transfers", transfersHandler.Routes())
 	})
 
 	httpserver.RunServer(cfg, logger, router)

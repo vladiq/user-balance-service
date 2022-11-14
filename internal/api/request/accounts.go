@@ -71,6 +71,9 @@ func (df *DepositFunds) Bind(req *http.Request) error {
 	if err := json.NewDecoder(req.Body).Decode(df); err != nil {
 		return fmt.Errorf("binding body: %w", err)
 	}
+
+	id, _ := uuid.Parse(chi.URLParam(req, "accountID"))
+	df.ID = id
 	return df.validate()
 }
 
@@ -95,6 +98,9 @@ func (wf *WithdrawFunds) Bind(req *http.Request) error {
 	if err := json.NewDecoder(req.Body).Decode(wf); err != nil {
 		return fmt.Errorf("binding body: %w", err)
 	}
+
+	id, _ := uuid.Parse(chi.URLParam(req, "accountID"))
+	wf.ID = id
 	return wf.validate()
 }
 

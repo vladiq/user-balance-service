@@ -32,12 +32,18 @@ func (h *accounts) Routes() *chi.Mux {
 
 	r.Get("/{accountID}", h.getAccount)
 	r.Post("/", h.createAccount)
-	r.Put("/deposit", h.depositFunds)
-	r.Put("/withdraw", h.withdrawFunds) // криво сделал, надо передавать
+	r.Put("/deposit/{accountID}", h.depositFunds)
+	r.Put("/withdraw/{accountID}", h.withdrawFunds)
 
 	return r
 }
 
+// createAccount creates a user account with provided amount of money
+// @Summary Create a user account with given balance
+// @Tags    Accounts
+// @Produce json
+// @Param   id path string true "article id"
+// @Router  /articles/{id} [get]
 func (h *accounts) createAccount(w http.ResponseWriter, r *http.Request) {
 	var req request.CreateAccount
 
