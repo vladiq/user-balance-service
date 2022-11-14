@@ -1,6 +1,7 @@
 package mapper
 
 import (
+	"github.com/vladiq/user-balance-service/internal/testdata"
 	"testing"
 	"time"
 
@@ -13,22 +14,22 @@ import (
 )
 
 func TestMakeTransferEntity(t *testing.T) {
-	validUUID, _ := uuid.Parse(validUUIDString)
+	validUUID, _ := uuid.Parse(testdata.ValidUUIDString)
 	expected := domain.Transaction{
 		FromID: validUUID,
 		ToID:   validUUID,
-		Amount: moneyAmount,
+		Amount: 5.5,
 	}
 	req := request.MakeTransfer{
 		FromID: validUUID,
 		ToID:   validUUID,
-		Amount: moneyAmount,
+		Amount: 5.5,
 	}
 	require.Equal(t, expected, Transfer{}.MakeTransferEntity(req))
 }
 
 func TestUserMonthlyReport(t *testing.T) {
-	validUUID, _ := uuid.Parse(validUUIDString)
+	validUUID, _ := uuid.Parse(testdata.ValidUUIDString)
 	expected := domain.Transfer{
 		AccountID: validUUID,
 		CreatedAt: time.Date(0, time.Month(0), 1, 0, 0, 0, 0, time.UTC),
@@ -46,13 +47,13 @@ func TestEntityToReportEntry(t *testing.T) {
 		Timestamp: time.Time{},
 		IsAccrual: false,
 		Info:      "",
-		Amount:    moneyAmount,
+		Amount:    5.5,
 	}
 	entity := domain.Transfer{
 		CreatedAt: time.Time{},
 		IsAccrual: false,
 		Info:      "",
-		Amount:    moneyAmount,
+		Amount:    5.5,
 	}
 	require.Equal(t, expected, Transfer{}.EntityToReportEntry(entity))
 }

@@ -1,6 +1,7 @@
 package mapper
 
 import (
+	"github.com/vladiq/user-balance-service/internal/testdata"
 	"testing"
 
 	"github.com/vladiq/user-balance-service/internal/api/request"
@@ -11,23 +12,18 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const (
-	validUUIDString = "129cec45-9a25-44dc-98c2-d8804c1485bf"
-	moneyAmount     = 5.5
-)
-
 func TestCreateAccountEntity(t *testing.T) {
 	expected := domain.Account{
-		Balance: moneyAmount,
+		Balance: 5.5,
 	}
 	req := request.CreateAccount{
-		Amount: moneyAmount,
+		Amount: 5.5,
 	}
 	require.Equal(t, expected, Account{}.CreateAccountEntity(req))
 }
 
 func TestGetAccountEntity(t *testing.T) {
-	validUUID, _ := uuid.Parse(validUUIDString)
+	validUUID, _ := uuid.Parse(testdata.ValidUUIDString)
 	expected := domain.Account{
 		ID: validUUID,
 	}
@@ -36,40 +32,40 @@ func TestGetAccountEntity(t *testing.T) {
 }
 
 func TestGetAccountResponse(t *testing.T) {
-	validUUID, _ := uuid.Parse(validUUIDString)
+	validUUID, _ := uuid.Parse(testdata.ValidUUIDString)
 	expected := response.GetAccount{
 		ID:      validUUID,
-		Balance: moneyAmount,
+		Balance: 5.5,
 	}
 	entity := domain.Account{
 		ID:      validUUID,
-		Balance: moneyAmount,
+		Balance: 5.5,
 	}
 	require.Equal(t, expected, Account{}.GetAccountResponse(entity))
 }
 
 func TestDepositFundsEntity(t *testing.T) {
-	validUUID, _ := uuid.Parse(validUUIDString)
+	validUUID, _ := uuid.Parse(testdata.ValidUUIDString)
 	expected := domain.Account{
 		ID:      validUUID,
-		Balance: moneyAmount,
+		Balance: 5.5,
 	}
 	req := request.DepositFunds{
 		ID:     validUUID,
-		Amount: moneyAmount,
+		Amount: 5.5,
 	}
 	require.Equal(t, expected, Account{}.DepositFundsEntity(req))
 }
 
 func TestWithdrawFundsEntity(t *testing.T) {
-	validUUID, _ := uuid.Parse(validUUIDString)
+	validUUID, _ := uuid.Parse(testdata.ValidUUIDString)
 	expected := domain.Account{
 		ID:      validUUID,
-		Balance: moneyAmount,
+		Balance: 5.5,
 	}
 	req := request.WithdrawFunds{
 		ID:     validUUID,
-		Amount: moneyAmount,
+		Amount: 5.5,
 	}
 	require.Equal(t, expected, Account{}.WithdrawFundsEntity(req))
 }

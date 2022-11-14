@@ -5,28 +5,29 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/vladiq/user-balance-service/internal/api/request"
 	"github.com/vladiq/user-balance-service/internal/domain"
+	"github.com/vladiq/user-balance-service/internal/testdata"
 	"testing"
 )
 
 func TestMakeCreateReservationEntity(t *testing.T) {
-	validUUID, _ := uuid.Parse(validUUIDString)
+	validUUID, _ := uuid.Parse(testdata.ValidUUIDString)
 	expected := domain.Reservation{
 		AccountID: validUUID,
 		ServiceID: validUUID,
 		OrderID:   validUUID,
-		Amount:    moneyAmount,
+		Amount:    5.5,
 	}
 	req := request.CreateReservation{
 		UserID:    validUUID,
 		ServiceID: validUUID,
 		OrderID:   validUUID,
-		Amount:    moneyAmount,
+		Amount:    5.5,
 	}
 	require.Equal(t, expected, Reservation{}.MakeCreateReservationEntity(req))
 }
 
 func TestMakeCancelReservationEntity(t *testing.T) {
-	validUUID, _ := uuid.Parse(validUUIDString)
+	validUUID, _ := uuid.Parse(testdata.ValidUUIDString)
 	expected := domain.Reservation{
 		ID: validUUID,
 	}
@@ -37,7 +38,7 @@ func TestMakeCancelReservationEntity(t *testing.T) {
 }
 
 func TestMakeConfirmReservationEntity(t *testing.T) {
-	validUUID, _ := uuid.Parse(validUUIDString)
+	validUUID, _ := uuid.Parse(testdata.ValidUUIDString)
 	expected := domain.Reservation{
 		ID: validUUID,
 	}
