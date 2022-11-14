@@ -93,6 +93,17 @@ func (h *accounts) getAccount(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// depositFunds deposit funds to a given account
+// @Summary Deposit funds to an account
+// @Tags    Accounts
+// @ID account-deposit
+// @Accept json
+// @Param id path string true "account uuid"
+// @Param amount body request.DepositFunds
+// @Success 200 "Ok"
+// @Failure 400 {string} constant.ErrBadRequest "Bad request"
+// @Failure 500 {string} constant.ErrInternalServerError "Internal server error"
+// @Router  /accounts/{id} [get]
 func (h *accounts) depositFunds(w http.ResponseWriter, r *http.Request) {
 	var req request.DepositFunds
 

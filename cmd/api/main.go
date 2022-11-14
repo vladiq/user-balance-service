@@ -76,17 +76,17 @@ func main() {
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.Timeout(30 * time.Second))
 
-	swaggerURL := fmt.Sprintf("http://%s:%d%s/swagger/doc.json", cfg.Server.Host, cfg.Server.Port, cfg.Server.BasePath)
-	router.Get(cfg.Server.BasePath+"/swagger/*", httpSwagger.Handler(
-		httpSwagger.URL(swaggerURL),
-	))
-
 	router.Route(cfg.Server.BasePath, func(router chi.Router) {
 		router.Mount("/reservations", reservationsHandler.Routes())
 		router.Mount("/accounts", accountsHandler.Routes())
 		router.Mount("/transfers", transfersHandler.Routes())
 		router.Mount("/reports", reportsHandler.Routes())
 	})
+
+	swaggerURL := fmt.Sprintf("http://%s:%d%s/swagger/doc.json", cfg.Server.Host, cfg.Server.Port, cfg.Server.BasePath)
+	router.Get(cfg.Server.BasePath+"/swagger/*", httpSwagger.Handler(
+		httpSwagger.URL(swaggerURL),
+	))
 
 	httpserver.RunServer(cfg, logger, router)
 }
