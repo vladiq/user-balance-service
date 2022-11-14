@@ -148,7 +148,7 @@ func (r *accountRepository) WithdrawFunds(ctx context.Context, entity domain.Acc
 		ctx,
 		tx,
 		entity.ID,
-		true,
+		false,
 		entity.Balance,
 		"merchant withdrawal",
 	); err != nil {

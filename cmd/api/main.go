@@ -24,8 +24,6 @@ import (
 
 const configYML = "config.yml"
 
-var gatewayTimeout = 30 * time.Second
-
 // @title       User Balance Microservice
 // @version 1.0
 // @description A microservice for user balance management, money transfer and report generation.
@@ -74,7 +72,7 @@ func main() {
 	router.Use(middleware.RedirectSlashes)
 	router.Use(chilogger.LoggerMiddleware(&logger))
 	router.Use(middleware.Recoverer)
-	router.Use(middleware.Timeout(gatewayTimeout))
+	router.Use(middleware.Timeout(30 * time.Second))
 
 	swaggerURL := fmt.Sprintf("http://%s:%d%s/swagger/doc.json", cfg.Server.Host, cfg.Server.Port, cfg.Server.BasePath)
 	router.Get(cfg.Server.BasePath+"/swagger/*", httpSwagger.Handler(

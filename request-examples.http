@@ -2,7 +2,7 @@ POST http://localhost:7000/balance-service/accounts
 Content-Type: application/json
 
 {
-  "amount": 100000.10
+  "amount": 234.23
 }
 
 ###
@@ -21,20 +21,20 @@ Accept: application/json
 
 ###
 
-PUT http://localhost:7000/balance-service/accounts/withdraw/2c4e6e1a-a376-4db6-85e8-adff5a1a8471
+PUT http://localhost:7000/balance-service/accounts/withdraw/696a8d48-5a40-4ec2-803d-1f9bd6fb2949
 Content-type: application/json
 
 {
-  "amount": 0.01
+  "amount": 1000000
 }
 
 ###
 
-PUT http://localhost:7000/balance-service/accounts/deposit/2c4e6e1a-a376-4db6-85e8-adff5a1a8471
+PUT http://localhost:7000/balance-service/accounts/deposit/696a8d48-5a40-4ec2-803d-1f9bd6fb2949
 Content-Type: application/json
 
 {
-  "amount": 0.50
+  "amount": 453
 }
 
 ###
@@ -43,10 +43,10 @@ POST http://localhost:7000/balance-service/reservations
 Content-Type: application/json
 
 {
-  "user_id": "982b96e5-7f14-4860-9cd3-50ac19688790",
+  "user_id": "696a8d48-5a40-4ec2-803d-1f9bd6fb2949",
   "service_id": "982b96e5-7f14-4860-9cd3-50ac19688790",
   "order_id": "982b96e5-7f14-4860-9cd3-50ac19688790",
-  "amount": 1000
+  "amount": 4
 }
 
 ###

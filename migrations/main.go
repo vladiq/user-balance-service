@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"embed"
-
 	"github.com/vladiq/user-balance-service/pkg/config"
 	"github.com/vladiq/user-balance-service/pkg/postgres"
 
@@ -12,10 +11,10 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-const migrationCmd = "up"
-
 //go:embed migrations/*.sql
 var embedMigrations embed.FS
+
+var migrationCmd = "up"
 
 func main() {
 	if err := config.ReadConfigYML("config.yml"); err != nil {
@@ -25,7 +24,7 @@ func main() {
 
 	conn, err := postgres.New(context.Background(), &cfg.DB)
 	if err != nil {
-		log.Fatal().Err(err).Msg("database connection error")
+		log.Fatal().Err(err).Msg("Database connection error")
 	}
 	defer conn.Close()
 
@@ -33,6 +32,6 @@ func main() {
 
 	err = goose.Run(migrationCmd, conn.DB, "migrations")
 	if err != nil {
-		log.Fatal().Err(err).Msg("goose.Status() error")
+		log.Fatal().Err(err).Msg("Cannot run goose")
 	}
 }
