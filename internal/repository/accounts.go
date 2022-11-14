@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"github.com/vladiq/user-balance-service/internal/constant"
 
 	"github.com/vladiq/user-balance-service/internal/domain"
 	"github.com/vladiq/user-balance-service/internal/repository/queries"
@@ -20,6 +21,11 @@ func NewAccountRepository(db *sqlx.DB) *accountRepository {
 		DB: db,
 	}
 }
+
+const (
+	depositMessage    = "merchant deposit"
+	withdrawalMessage = "merchant withdrawal"
+)
 
 func (r *accountRepository) GetAccount(ctx context.Context, entity domain.Account) (*domain.Account, error) {
 	opts := sql.TxOptions{
@@ -111,7 +117,7 @@ func (r *accountRepository) DepositFunds(ctx context.Context, entity domain.Acco
 		entity.ID,
 		true,
 		entity.Balance,
-		"merchant deposit",
+		depositMessage,
 	); err != nil {
 		if err := tx.Rollback(); err != nil {
 			return fmt.Errorf("rolling transaction back: %w", err)
@@ -137,6 +143,21 @@ func (r *accountRepository) WithdrawFunds(ctx context.Context, entity domain.Acc
 		return fmt.Errorf("beginning transaction: %w", err)
 	}
 
+	acc, err := queries.GetAccount(ctx, tx, entity.ID)
+	if err != nil {
+		if err := tx.Rollback(); err != nil {
+			return fmt.Errorf("rolling transaction back: %w", err)
+		}
+		return fmt.Errorf("getting account: %w", err)
+	}
+
+	if acc.Balance-entity.Balance < 0 {
+		if err := tx.Rollback(); err != nil {
+			return fmt.Errorf("rolling transaction back: %w", err)
+		}
+		return fmt.Errorf("not enough funds to withdraw: %w", constant.ErrBadRequest)
+	}
+
 	if err := queries.WithdrawFunds(ctx, tx, entity.ID, entity.Balance); err != nil {
 		if err := tx.Rollback(); err != nil {
 			return fmt.Errorf("rolling transaction back: %w", err)
@@ -150,7 +171,7 @@ func (r *accountRepository) WithdrawFunds(ctx context.Context, entity domain.Acc
 		entity.ID,
 		false,
 		entity.Balance,
-		"merchant withdrawal",
+		withdrawalMessage,
 	); err != nil {
 		if err := tx.Rollback(); err != nil {
 			return fmt.Errorf("rolling transaction back: %w", err)

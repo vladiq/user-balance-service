@@ -22,6 +22,11 @@ func NewReservationRepository(db *sqlx.DB) *reservationRepository {
 	}
 }
 
+const (
+	reservationWithdrawalMsg = "withdrawing money to make a reservation"
+	reservationDepositMsg    = "paying back after cancelling reservation"
+)
+
 func (r *reservationRepository) Create(ctx context.Context, e domain.Reservation) error {
 	opts := sql.TxOptions{
 		ReadOnly:  false,
@@ -62,7 +67,7 @@ func (r *reservationRepository) Create(ctx context.Context, e domain.Reservation
 		e.AccountID,
 		false,
 		e.Amount,
-		"withdrawing money to make a reservation",
+		reservationWithdrawalMsg,
 	); err != nil {
 		if err := tx.Rollback(); err != nil {
 			return fmt.Errorf("rolling transaction back: %w", err)
@@ -109,7 +114,7 @@ func (r *reservationRepository) Cancel(ctx context.Context, entity domain.Reserv
 		accountID,
 		true,
 		amount,
-		"payback after cancelling reservation",
+		reservationDepositMsg,
 	); err != nil {
 		if err := tx.Rollback(); err != nil {
 			return fmt.Errorf("rolling transaction back: %w", err)

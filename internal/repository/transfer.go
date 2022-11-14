@@ -23,6 +23,8 @@ func NewTransferRepository(db *sqlx.DB) *transferRepository {
 	}
 }
 
+const moneyTransferMsg = "money transfer from another user"
+
 func (r *transferRepository) CreateTransfer(ctx context.Context, entity domain.Transaction) error {
 	opts := sql.TxOptions{
 		ReadOnly:  false,
@@ -83,7 +85,7 @@ func (r *transferRepository) CreateTransfer(ctx context.Context, entity domain.T
 		entity.ToID,
 		true,
 		entity.Amount,
-		"money transfer from another user",
+		moneyTransferMsg,
 	); err != nil {
 		if err := tx.Rollback(); err != nil {
 			return fmt.Errorf("rolling transaction back: %w", err)

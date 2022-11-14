@@ -3,10 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
-	httpSwagger "github.com/swaggo/http-swagger"
 	"time"
 
 	"github.com/vladiq/user-balance-service/cmd/api/handlers"
+	_ "github.com/vladiq/user-balance-service/docs"
 	"github.com/vladiq/user-balance-service/internal/api/service"
 	"github.com/vladiq/user-balance-service/internal/pkg/chilogger"
 	"github.com/vladiq/user-balance-service/internal/pkg/httpserver"
@@ -18,8 +18,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/rs/zerolog/log"
-
-	_ "github.com/vladiq/user-balance-service/docs"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 const configYML = "config.yml"
@@ -59,14 +58,17 @@ func main() {
 	accountRepo := repository.NewAccountRepository(dbConn)
 	reservationRepo := repository.NewReservationRepository(dbConn)
 	transferRepo := repository.NewTransferRepository(dbConn)
+	reportRepo := repository.NewReportRepository(dbConn)
 
 	reservationsService := service.NewReservations(reservationRepo)
 	accountsService := service.NewAccounts(accountRepo)
 	transfersService := service.NewTransfers(transferRepo)
+	reportsService := service.NewReports(reportRepo)
 
 	reservationsHandler := handlers.NewReservations(reservationsService)
 	accountsHandler := handlers.NewAccounts(accountsService)
 	transfersHandler := handlers.NewTransfers(transfersService)
+	reportsHandler := handlers.NewReports(reportsService)
 
 	router := chi.NewRouter()
 	router.Use(middleware.RedirectSlashes)
@@ -83,6 +85,7 @@ func main() {
 		router.Mount("/reservations", reservationsHandler.Routes())
 		router.Mount("/accounts", accountsHandler.Routes())
 		router.Mount("/transfers", transfersHandler.Routes())
+		router.Mount("/reports", reportsHandler.Routes())
 	})
 
 	httpserver.RunServer(cfg, logger, router)

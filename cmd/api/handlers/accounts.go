@@ -41,9 +41,13 @@ func (h *accounts) Routes() *chi.Mux {
 // createAccount creates a user account with provided amount of money
 // @Summary Create a user account with given balance
 // @Tags    Accounts
-// @Produce json
-// @Param   id path string true "article id"
-// @Router  /articles/{id} [get]
+// @ID account-create
+// @Accept json
+// @Param amount body request.CreateAccount true "amount of money on the new account"
+// @Success 201 "Created"
+// @Failure 400 {string} constant.ErrBadRequest "Bad request"
+// @Failure 500 {string} constant.ErrInternalServerError "Internal server error"
+// @Router  /accounts [post]
 func (h *accounts) createAccount(w http.ResponseWriter, r *http.Request) {
 	var req request.CreateAccount
 
@@ -61,6 +65,16 @@ func (h *accounts) createAccount(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
+// getAccount gets a user account by id
+// @Summary Get a user account information by its ID
+// @Tags    Accounts
+// @ID account-get
+// @Produce json
+// @Param id path string true "account uuid"
+// @Success 200 "Ok"
+// @Failure 400 {string} constant.ErrBadRequest "Bad request"
+// @Failure 500 {string} constant.ErrInternalServerError "Internal server error"
+// @Router  /accounts/{id} [get]
 func (h *accounts) getAccount(w http.ResponseWriter, r *http.Request) {
 	var req request.GetAccount
 

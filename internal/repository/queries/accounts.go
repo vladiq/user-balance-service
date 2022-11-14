@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"github.com/vladiq/user-balance-service/internal/constant"
 
 	"github.com/vladiq/user-balance-service/internal/domain"
 	"github.com/vladiq/user-balance-service/internal/repository/models"
@@ -23,7 +24,10 @@ func GetAccount(ctx context.Context, tx *sql.Tx, userID uuid.UUID) (*domain.Acco
 	row := tx.QueryRowContext(ctx, getUserQuery, userID)
 	err := row.Scan(&dtoAccount.ID, &dtoAccount.Balance, &dtoAccount.CreatedAt)
 	if err != nil {
-		return nil, fmt.Errorf("scanning user: %w", err) // TODO: handle ErrNoRows
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("user not found: %w", constant.ErrBadRequest)
+		}
+		return nil, fmt.Errorf("scanning user: %w", err)
 	}
 
 	acc := &domain.Account{
