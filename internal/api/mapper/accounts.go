@@ -1,6 +1,7 @@
 package mapper
 
 import (
+	"github.com/google/uuid"
 	"github.com/vladiq/user-balance-service/internal/api/request"
 	"github.com/vladiq/user-balance-service/internal/api/response"
 	"github.com/vladiq/user-balance-service/internal/domain"
@@ -28,16 +29,16 @@ func (m Account) GetAccountResponse(entity domain.Account) response.GetAccount {
 	}
 }
 
-func (m Account) DepositFundsEntity(r request.DepositFunds) domain.Account {
+func (m Account) DepositFundsEntity(r request.DepositFunds, accountID uuid.UUID) domain.Account {
 	return domain.Account{
-		ID:      r.ID,
+		ID:      accountID,
 		Balance: r.Amount,
 	}
 }
 
-func (m Account) WithdrawFundsEntity(r request.WithdrawFunds) domain.Account {
+func (m Account) WithdrawFundsEntity(r request.WithdrawFunds, accountID uuid.UUID) domain.Account {
 	return domain.Account{
-		ID:      r.ID,
+		ID:      accountID,
 		Balance: r.Amount,
 	}
 }

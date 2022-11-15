@@ -31,6 +31,12 @@ definitions:
       user_id:
         type: string
     type: object
+  request.DepositFunds:
+    properties:
+      amount:
+        description: ID     uuid.UUID `json:"id"`
+        type: number
+    type: object
   request.MakeTransfer:
     properties:
       amount:
@@ -39,6 +45,11 @@ definitions:
         type: string
       to_id:
         type: string
+    type: object
+  request.WithdrawFunds:
+    properties:
+      amount:
+        type: number
     type: object
   response.GetAccount:
     properties:
@@ -84,7 +95,8 @@ paths:
           description: Bad request
         "500":
           description: Internal server error
-      summary: Create a user account with given balance
+      summary: Create a user account with given balance and add an entry to the transfers
+        table
       tags:
       - Accounts
   /accounts/{id}:
@@ -126,7 +138,7 @@ paths:
         name: amount
         required: true
         schema:
-          type: number
+          $ref: '#/definitions/request.DepositFunds'
       responses:
         "204":
           description: No Content
@@ -153,7 +165,7 @@ paths:
         name: amount
         required: true
         schema:
-          type: number
+          $ref: '#/definitions/request.WithdrawFunds'
       responses:
         "204":
           description: No Content

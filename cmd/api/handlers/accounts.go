@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"github.com/google/uuid"
 	"net/http"
 
 	"github.com/vladiq/user-balance-service/internal/api/request"
@@ -15,8 +16,8 @@ import (
 type accountsService interface {
 	CreateAccount(ctx context.Context, request request.CreateAccount) error
 	GetAccount(ctx context.Context, request request.GetAccount) (response.GetAccount, error)
-	DepositFunds(ctx context.Context, request request.DepositFunds) error
-	WithdrawFunds(ctx context.Context, request request.WithdrawFunds) error
+	DepositFunds(ctx context.Context, request request.DepositFunds, accountID uuid.UUID) error
+	WithdrawFunds(ctx context.Context, request request.WithdrawFunds, accountID uuid.UUID) error
 }
 
 type accounts struct {
@@ -39,7 +40,7 @@ func (h *accounts) Routes() *chi.Mux {
 }
 
 // createAccount creates a user account with provided amount of money
-// @Summary Create a user account with given balance
+// @Summary Create a user account with given balance and add an entry to the transfers table
 // @Tags    Accounts
 // @ID account-create
 // @Accept json
@@ -99,7 +100,7 @@ func (h *accounts) getAccount(w http.ResponseWriter, r *http.Request) {
 // @ID account-deposit
 // @Accept json
 // @Param id path string true "account uuid"
-// @Param amount body number true "amount of money"
+// @Param amount body request.DepositFunds true "amount of money"
 // @Success 204 "No Content"
 // @Failure 400 "Bad request"
 // @Failure 500 "Internal server error"
@@ -113,7 +114,13 @@ func (h *accounts) depositFunds(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.service.DepositFunds(r.Context(), req); err != nil {
+	accountID, err := uuid.Parse(chi.URLParam(r, "accountID"))
+	if err != nil {
+		render.Status(r, http.StatusBadRequest)
+		render.PlainText(w, r, err.Error())
+	}
+
+	if err := h.service.DepositFunds(r.Context(), req, accountID); err != nil {
 		utils.RenderError(w, r, err)
 		return
 	}
@@ -127,7 +134,7 @@ func (h *accounts) depositFunds(w http.ResponseWriter, r *http.Request) {
 // @ID account-withdraw
 // @Accept json
 // @Param id path string true "account uuid"
-// @Param amount body number true "amount of money"
+// @Param amount body request.WithdrawFunds true "amount of money"
 // @Success 204 "No Content"
 // @Failure 400 "Bad request"
 // @Failure 500 "Internal server error"
@@ -141,7 +148,13 @@ func (h *accounts) withdrawFunds(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.service.WithdrawFunds(r.Context(), req); err != nil {
+	accountID, err := uuid.Parse(chi.URLParam(r, "accountID"))
+	if err != nil {
+		render.Status(r, http.StatusBadRequest)
+		render.PlainText(w, r, err.Error())
+	}
+
+	if err := h.service.WithdrawFunds(r.Context(), req, accountID); err != nil {
 		utils.RenderError(w, r, err)
 		return
 	}

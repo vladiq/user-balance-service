@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"github.com/google/uuid"
 
 	"github.com/vladiq/user-balance-service/internal/api/mapper"
 	"github.com/vladiq/user-balance-service/internal/api/request"
@@ -37,10 +38,10 @@ func (a *accounts) GetAccount(ctx context.Context, r request.GetAccount) (respon
 	}
 }
 
-func (a *accounts) DepositFunds(ctx context.Context, r request.DepositFunds) error {
-	return a.repo.DepositFunds(ctx, a.mapper.DepositFundsEntity(r))
+func (a *accounts) DepositFunds(ctx context.Context, r request.DepositFunds, accountID uuid.UUID) error {
+	return a.repo.DepositFunds(ctx, a.mapper.DepositFundsEntity(r, accountID))
 }
 
-func (a *accounts) WithdrawFunds(ctx context.Context, r request.WithdrawFunds) error {
-	return a.repo.WithdrawFunds(ctx, a.mapper.WithdrawFundsEntity(r))
+func (a *accounts) WithdrawFunds(ctx context.Context, r request.WithdrawFunds, accountID uuid.UUID) error {
+	return a.repo.WithdrawFunds(ctx, a.mapper.WithdrawFundsEntity(r, accountID))
 }

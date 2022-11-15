@@ -26,7 +26,7 @@ const docTemplate = `{
                 "tags": [
                     "Accounts"
                 ],
-                "summary": "Create a user account with given balance",
+                "summary": "Create a user account with given balance and add an entry to the transfers table",
                 "operationId": "account-create",
                 "parameters": [
                     {
@@ -76,7 +76,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "number"
+                            "$ref": "#/definitions/request.DepositFunds"
                         }
                     }
                 ],
@@ -117,7 +117,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "number"
+                            "$ref": "#/definitions/request.WithdrawFunds"
                         }
                     }
                 ],
@@ -433,6 +433,15 @@ const docTemplate = `{
                 }
             }
         },
+        "request.DepositFunds": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "description": "ID     uuid.UUID ` + "`" + `json:\"id\"` + "`" + `",
+                    "type": "number"
+                }
+            }
+        },
         "request.MakeTransfer": {
             "type": "object",
             "properties": {
@@ -444,6 +453,14 @@ const docTemplate = `{
                 },
                 "to_id": {
                     "type": "string"
+                }
+            }
+        },
+        "request.WithdrawFunds": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
                 }
             }
         },

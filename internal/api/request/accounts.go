@@ -63,8 +63,8 @@ func (r *GetAccount) validate() error {
 }
 
 type DepositFunds struct {
-	ID     uuid.UUID `json:"id"`
-	Amount float64   `json:"amount"`
+	//ID     uuid.UUID `json:"id"`
+	Amount float64 `json:"amount"`
 }
 
 func (df *DepositFunds) Bind(req *http.Request) error {
@@ -72,8 +72,6 @@ func (df *DepositFunds) Bind(req *http.Request) error {
 		return fmt.Errorf("binding body: %w", err)
 	}
 
-	id, _ := uuid.Parse(chi.URLParam(req, "accountID"))
-	df.ID = id
 	return df.validate()
 }
 
@@ -82,16 +80,11 @@ func (df *DepositFunds) validate() error {
 		return fmt.Errorf("validating amount: %w", err)
 	}
 
-	if err := validation.Validate(df.ID, validation.Required, is.UUID); err != nil {
-		return fmt.Errorf("validating ID: %w", err)
-	}
-
 	return nil
 }
 
 type WithdrawFunds struct {
-	ID     uuid.UUID `json:"id"`
-	Amount float64   `json:"amount"`
+	Amount float64 `json:"amount"`
 }
 
 func (wf *WithdrawFunds) Bind(req *http.Request) error {
@@ -99,8 +92,6 @@ func (wf *WithdrawFunds) Bind(req *http.Request) error {
 		return fmt.Errorf("binding body: %w", err)
 	}
 
-	id, _ := uuid.Parse(chi.URLParam(req, "accountID"))
-	wf.ID = id
 	return wf.validate()
 }
 
@@ -109,8 +100,5 @@ func (wf *WithdrawFunds) validate() error {
 		return fmt.Errorf("validating amount: %w", err)
 	}
 
-	if err := validation.Validate(wf.ID, validation.Required, is.UUID); err != nil {
-		return fmt.Errorf("validating ID: %w", err)
-	}
 	return nil
 }

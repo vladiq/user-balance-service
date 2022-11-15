@@ -25,7 +25,7 @@ PUT http://localhost:7000/balance-service/accounts/withdraw/696a8d48-5a40-4ec2-8
 Content-type: application/json
 
 {
-  "amount": 1000000000
+  "amount": 1
 }
 
 ###

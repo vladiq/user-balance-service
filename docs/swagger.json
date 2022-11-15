@@ -19,7 +19,7 @@
                 "tags": [
                     "Accounts"
                 ],
-                "summary": "Create a user account with given balance",
+                "summary": "Create a user account with given balance and add an entry to the transfers table",
                 "operationId": "account-create",
                 "parameters": [
                     {
@@ -69,7 +69,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "number"
+                            "$ref": "#/definitions/request.DepositFunds"
                         }
                     }
                 ],
@@ -110,7 +110,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "number"
+                            "$ref": "#/definitions/request.WithdrawFunds"
                         }
                     }
                 ],
@@ -426,6 +426,15 @@
                 }
             }
         },
+        "request.DepositFunds": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "description": "ID     uuid.UUID `json:\"id\"`",
+                    "type": "number"
+                }
+            }
+        },
         "request.MakeTransfer": {
             "type": "object",
             "properties": {
@@ -437,6 +446,14 @@
                 },
                 "to_id": {
                     "type": "string"
+                }
+            }
+        },
+        "request.WithdrawFunds": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
                 }
             }
         },
