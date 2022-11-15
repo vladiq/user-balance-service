@@ -14,7 +14,7 @@ type (
 
 const (
 	// PageIDKey refers to the context key that stores the next page id
-	PageIDKey CustomKey = "page_id"
+	PageIDKey CustomKey = "page-id"
 )
 
 // Pagination middleware is used to extract the next page id from the url query

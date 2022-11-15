@@ -36,6 +36,16 @@ func (h *transfers) Routes() *chi.Mux {
 	return r
 }
 
+// makeTransfer creates a money transfer between two user accounts and adds entries to transfers table
+// @Summary Make a money transfer between two user accounts and add balance report entries
+// @Tags    Transfers
+// @ID transfer-create
+// @Accept json
+// @Param input body request.MakeTransfer true "transfer info"
+// @Success 201 "Created"
+// @Failure 400 "Bad request"
+// @Failure 500 "Internal server error"
+// @Router  /transfers [post]
 func (h *transfers) makeTransfer(w http.ResponseWriter, r *http.Request) {
 	var req request.MakeTransfer
 
@@ -53,6 +63,18 @@ func (h *transfers) makeTransfer(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
+// listUserTransfers gets user transfer list, supports pagination and sorting by date and amount
+// @Summary Gets user transfer list, supports pagination and sorting by date and amount. Page size is 4.
+// @Tags    Transfers
+// @ID transfers-report
+// @Produce json
+// @Param id path string true "account uuid"
+// @Param order-by query string false "order by 'date' or 'amount'"
+// @Param page-id query string false "pagination uuid key. Don't set it at first and then the next page keys would appear in response body"
+// @Success 200 {object} response.GetUserTransfers "next_page_id returned would be the next key for pagination"
+// @Failure 400 "Bad request"
+// @Failure 500 "Internal server error"
+// @Router /transfers/reports/{id} [get]
 func (h *transfers) listUserTransfers(w http.ResponseWriter, r *http.Request) {
 	var req request.GetUserTransfers
 

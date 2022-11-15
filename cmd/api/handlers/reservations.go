@@ -35,6 +35,16 @@ func (h *reservations) Routes() chi.Router {
 	return r
 }
 
+// CreateReservation creates a reservation for a user on a special reservation account
+// @Summary Create a reservation
+// @Tags Reservations
+// @ID create-reservation
+// @Accept json
+// @Param input body request.CreateReservation true "Reservation info"
+// @Success 201 "Created"
+// @Failure 400 {string} constant.ErrBadRequest "Bad request"
+// @Failure 500 {string} constant.ErrInternalServerError "Internal server error"
+// @Router  /reservations [post]
 func (h *reservations) CreateReservation(w http.ResponseWriter, r *http.Request) {
 	var req request.CreateReservation
 
@@ -52,6 +62,16 @@ func (h *reservations) CreateReservation(w http.ResponseWriter, r *http.Request)
 	w.WriteHeader(http.StatusNoContent)
 }
 
+// CancelReservation cancels a reservation, deletes an entry from a table and returns money back to user
+// @Summary Cancel and delete a reservation returning money back to user
+// @Tags Reservations
+// @ID cancel-reservation
+// @Accept json
+// @Param reservation_id path string true "Reservation ID"
+// @Success 204 "No Content"
+// @Failure 400 "Bad request"
+// @Failure 500 "Internal server error"
+// @Router  /reservations/cancel-reservation/{reservation_id} [delete]
 func (h *reservations) CancelReservation(w http.ResponseWriter, r *http.Request) {
 	var req request.CancelReservation
 
@@ -69,6 +89,16 @@ func (h *reservations) CancelReservation(w http.ResponseWriter, r *http.Request)
 	w.WriteHeader(http.StatusNoContent)
 }
 
+// ConfirmReservation confirms a reservation, deletes an entry from a table and adds an entry to reports table
+// @Summary Confirm and delete a reservation adding a record to reports table
+// @Tags Reservations
+// @ID confirm-reservation
+// @Accept json
+// @Param reservation_id path string true "Reservation ID"
+// @Success 204 "No Content"
+// @Failure 400 "Bad request"
+// @Failure 500 "Internal server error"
+// @Router  /reservations/confirm-reservation/{reservation_id} [delete]
 func (h *reservations) ConfirmReservation(w http.ResponseWriter, r *http.Request) {
 	var req request.ConfirmReservation
 

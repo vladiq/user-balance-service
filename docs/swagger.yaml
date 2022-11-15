@@ -1,0 +1,310 @@
+basePath: /balance-service
+definitions:
+  domain.Transfer:
+    properties:
+      accountID:
+        type: string
+      amount:
+        type: number
+      createdAt:
+        type: string
+      id:
+        type: string
+      info:
+        type: string
+      isAccrual:
+        type: boolean
+    type: object
+  request.CreateAccount:
+    properties:
+      amount:
+        type: number
+    type: object
+  request.CreateReservation:
+    properties:
+      amount:
+        type: number
+      order_id:
+        type: string
+      service_id:
+        type: string
+      user_id:
+        type: string
+    type: object
+  request.MakeTransfer:
+    properties:
+      amount:
+        type: number
+      from_id:
+        type: string
+      to_id:
+        type: string
+    type: object
+  response.GetAccount:
+    properties:
+      balance:
+        type: number
+      id:
+        type: string
+    type: object
+  response.GetUserTransfers:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/domain.Transfer'
+        type: array
+      next_page_id:
+        type: string
+    type: object
+host: localhost:7000
+info:
+  contact:
+    name: Vladislav Kosogorov
+  description: A microservice for user balance management, money transferring and
+    report generation.
+  title: User Balance Microservice
+  version: "1.0"
+paths:
+  /accounts:
+    post:
+      consumes:
+      - application/json
+      operationId: account-create
+      parameters:
+      - description: amount of money on the new account
+        in: body
+        name: amount
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateAccount'
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+      summary: Create a user account with given balance
+      tags:
+      - Accounts
+  /accounts/{id}:
+    get:
+      operationId: account-get
+      parameters:
+      - description: account uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Account info
+          schema:
+            $ref: '#/definitions/response.GetAccount'
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+      summary: Get a user account information by its ID
+      tags:
+      - Accounts
+  /accounts/deposit/{id}:
+    put:
+      consumes:
+      - application/json
+      operationId: account-deposit
+      parameters:
+      - description: account uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: amount of money
+        in: body
+        name: amount
+        required: true
+        schema:
+          type: number
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+      summary: Deposit funds to an account and add en entry to the transfers table
+      tags:
+      - Accounts
+  /accounts/withdraw/{id}:
+    put:
+      consumes:
+      - application/json
+      operationId: account-withdraw
+      parameters:
+      - description: account uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: amount of money
+        in: body
+        name: amount
+        required: true
+        schema:
+          type: number
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+      summary: Withdraw funds from an account and add en entry to the transfers table
+      tags:
+      - Accounts
+  /reports:
+    get:
+      operationId: services-monthly-report
+      parameters:
+      - description: The month report will be created for
+        in: query
+        name: month
+        required: true
+        type: integer
+      produces:
+      - text/csv
+      responses:
+        "200":
+          description: Ok
+        "400":
+          description: Bad Request
+      summary: Get a monthly service revenue report
+      tags:
+      - Reports
+  /reservations:
+    post:
+      consumes:
+      - application/json
+      operationId: create-reservation
+      parameters:
+      - description: Reservation info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateReservation'
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Create a reservation
+      tags:
+      - Reservations
+  /reservations/cancel-reservation/{reservation_id}:
+    delete:
+      consumes:
+      - application/json
+      operationId: cancel-reservation
+      parameters:
+      - description: Reservation ID
+        in: path
+        name: reservation_id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+      summary: Cancel and delete a reservation returning money back to user
+      tags:
+      - Reservations
+  /reservations/confirm-reservation/{reservation_id}:
+    delete:
+      consumes:
+      - application/json
+      operationId: confirm-reservation
+      parameters:
+      - description: Reservation ID
+        in: path
+        name: reservation_id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+      summary: Confirm and delete a reservation adding a record to reports table
+      tags:
+      - Reservations
+  /transfers:
+    post:
+      consumes:
+      - application/json
+      operationId: transfer-create
+      parameters:
+      - description: transfer info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/request.MakeTransfer'
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+      summary: Make a money transfer between two user accounts and add balance report
+        entries
+      tags:
+      - Transfers
+  /transfers/reports/{id}:
+    get:
+      operationId: transfers-report
+      parameters:
+      - description: account uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: order by 'date' or 'amount'
+        in: query
+        name: order-by
+        type: string
+      - description: pagination uuid key. Don't set it at first and then the next
+          page keys would appear in response body
+        in: query
+        name: page-id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: next_page_id returned would be the next key for pagination
+          schema:
+            $ref: '#/definitions/response.GetUserTransfers'
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+      summary: Gets user transfer list, supports pagination and sorting by date and
+        amount. Page size is 4.
+      tags:
+      - Transfers
+swagger: "2.0"

@@ -51,7 +51,7 @@ Content-Type: application/json
 
 ###
 
-DELETE http://localhost:7000/balance-service/reservations/cancel-reservation/0602e6cf-ec04-4437-b2d1-4e8d6ae2f343
+DELETE http://localhost:7000/balance-service/reservations/cancel-reservation/eeafa29f-d963-44b3-b4b3-1432d69ff6b5
 
 ###
 

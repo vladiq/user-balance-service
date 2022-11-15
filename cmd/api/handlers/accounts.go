@@ -45,8 +45,8 @@ func (h *accounts) Routes() *chi.Mux {
 // @Accept json
 // @Param amount body request.CreateAccount true "amount of money on the new account"
 // @Success 201 "Created"
-// @Failure 400 {string} constant.ErrBadRequest "Bad request"
-// @Failure 500 {string} constant.ErrInternalServerError "Internal server error"
+// @Failure 400 "Bad request"
+// @Failure 500 "Internal server error"
 // @Router  /accounts [post]
 func (h *accounts) createAccount(w http.ResponseWriter, r *http.Request) {
 	var req request.CreateAccount
@@ -71,9 +71,9 @@ func (h *accounts) createAccount(w http.ResponseWriter, r *http.Request) {
 // @ID account-get
 // @Produce json
 // @Param id path string true "account uuid"
-// @Success 200 "Ok"
-// @Failure 400 {string} constant.ErrBadRequest "Bad request"
-// @Failure 500 {string} constant.ErrInternalServerError "Internal server error"
+// @Success 200 {object} response.GetAccount "Account info"
+// @Failure 400 "Bad request"
+// @Failure 500 "Internal server error"
 // @Router  /accounts/{id} [get]
 func (h *accounts) getAccount(w http.ResponseWriter, r *http.Request) {
 	var req request.GetAccount
@@ -94,16 +94,16 @@ func (h *accounts) getAccount(w http.ResponseWriter, r *http.Request) {
 }
 
 // depositFunds deposit funds to a given account
-// @Summary Deposit funds to an account
+// @Summary Deposit funds to an account and add en entry to the transfers table
 // @Tags    Accounts
 // @ID account-deposit
 // @Accept json
 // @Param id path string true "account uuid"
-// @Param amount body request.DepositFunds
-// @Success 200 "Ok"
-// @Failure 400 {string} constant.ErrBadRequest "Bad request"
-// @Failure 500 {string} constant.ErrInternalServerError "Internal server error"
-// @Router  /accounts/{id} [get]
+// @Param amount body number true "amount of money"
+// @Success 204 "No Content"
+// @Failure 400 "Bad request"
+// @Failure 500 "Internal server error"
+// @Router /accounts/deposit/{id} [put]
 func (h *accounts) depositFunds(w http.ResponseWriter, r *http.Request) {
 	var req request.DepositFunds
 
@@ -121,6 +121,17 @@ func (h *accounts) depositFunds(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
+// depositFunds withdraw funds from a given account
+// @Summary Withdraw funds from an account and add en entry to the transfers table
+// @Tags    Accounts
+// @ID account-withdraw
+// @Accept json
+// @Param id path string true "account uuid"
+// @Param amount body number true "amount of money"
+// @Success 204 "No Content"
+// @Failure 400 "Bad request"
+// @Failure 500 "Internal server error"
+// @Router /accounts/withdraw/{id} [put]
 func (h *accounts) withdrawFunds(w http.ResponseWriter, r *http.Request) {
 	var req request.WithdrawFunds
 

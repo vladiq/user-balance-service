@@ -25,7 +25,7 @@ const configYML = "config.yml"
 
 // @title       User Balance Microservice
 // @version 1.0
-// @description A microservice for user balance management, money transfer and report generation.
+// @description A microservice for user balance management, money transferring and report generation.
 // @contact.name Vladislav Kosogorov
 // @host     localhost:7000
 // @BasePath /balance-service

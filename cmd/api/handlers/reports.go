@@ -33,6 +33,15 @@ func (h *reports) Routes() *chi.Mux {
 	return r
 }
 
+// servicesMonthReport outputs a text/csv monthly report for services
+// @Summary Get a monthly service revenue report
+// @Tags Reports
+// @ID services-monthly-report
+// @Produce text/csv
+// @Param month query int true "The month report will be created for"
+// @Success 200 "Ok"
+// @Failure 400 "Bad Request"
+// @Router /reports [get]
 func (h *reports) servicesMonthReport(w http.ResponseWriter, r *http.Request) {
 	var req request.GetServiceReport
 
