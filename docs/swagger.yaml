@@ -67,7 +67,7 @@ definitions:
       next_page_id:
         type: string
     type: object
-host: localhost:7000
+host: 0.0.0.0:7000
 info:
   contact:
     name: Vladislav Kosogorov
@@ -212,12 +212,8 @@ paths:
           description: Created
         "400":
           description: Bad request
-          schema:
-            type: string
         "500":
           description: Internal server error
-          schema:
-            type: string
       summary: Create a reservation
       tags:
       - Reservations

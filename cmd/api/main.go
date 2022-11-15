@@ -27,7 +27,7 @@ const configYML = "config.yml"
 // @version 1.0
 // @description A microservice for user balance management, money transferring and report generation.
 // @contact.name Vladislav Kosogorov
-// @host     localhost:7000
+// @host     0.0.0.0:7000
 // @BasePath /balance-service
 func main() {
 	if err := config.ReadConfigYML(configYML); err != nil {

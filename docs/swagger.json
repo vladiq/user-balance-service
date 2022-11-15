@@ -8,7 +8,7 @@
         },
         "version": "1.0"
     },
-    "host": "localhost:7000",
+    "host": "0.0.0.0:7000",
     "basePath": "/balance-service",
     "paths": {
         "/accounts": {
@@ -217,16 +217,10 @@
                         "description": "Created"
                     },
                     "400": {
-                        "description": "Bad request",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "description": "Bad request"
                     },
                     "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "description": "Internal server error"
                     }
                 }
             }

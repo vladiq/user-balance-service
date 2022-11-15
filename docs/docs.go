@@ -224,16 +224,10 @@ const docTemplate = `{
                         "description": "Created"
                     },
                     "400": {
-                        "description": "Bad request",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "description": "Bad request"
                     },
                     "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "description": "Internal server error"
                     }
                 }
             }
@@ -495,7 +489,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:7000",
+	Host:             "0.0.0.0:7000",
 	BasePath:         "/balance-service",
 	Schemes:          []string{},
 	Title:            "User Balance Microservice",

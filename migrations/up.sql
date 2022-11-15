@@ -1,4 +1,3 @@
--- +goose Up
 CREATE TABLE "accounts" (
     "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
     "balance" DECIMAL(15, 2) NOT NULL DEFAULT 0,
@@ -37,9 +36,3 @@ CREATE TABLE "reports" (
 
     CONSTRAINT amount_non_negative CHECK (amount >= 0)
 );
-
--- +goose Down
-DROP TABLE IF EXISTS accounts CASCADE;
-DROP TABLE IF EXISTS transfers CASCADE;
-DROP TABLE IF EXISTS reservations CASCADE;
-DROP TABLE IF EXISTS reports CASCADE;

@@ -42,8 +42,8 @@ func (h *reservations) Routes() chi.Router {
 // @Accept json
 // @Param input body request.CreateReservation true "Reservation info"
 // @Success 201 "Created"
-// @Failure 400 {string} constant.ErrBadRequest "Bad request"
-// @Failure 500 {string} constant.ErrInternalServerError "Internal server error"
+// @Failure 400 "Bad request"
+// @Failure 500 "Internal server error"
 // @Router  /reservations [post]
 func (h *reservations) CreateReservation(w http.ResponseWriter, r *http.Request) {
 	var req request.CreateReservation

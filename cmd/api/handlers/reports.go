@@ -58,7 +58,7 @@ func (h *reports) servicesMonthReport(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "text/csv")
-	w.Header().Add("Content-Disposition", `attachment; filename="user-report.csv"`)
+	w.Header().Add("Content-Disposition", `attachment; filename="service-monthly-report.csv"`)
 	if err := gocsv.Marshal(reportEntries, w); err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.PlainText(w, r, err.Error())

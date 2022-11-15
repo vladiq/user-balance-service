@@ -1,3 +1,4 @@
+### Создание аккаунта с заданным балансом
 POST http://localhost:7000/balance-service/accounts
 Content-Type: application/json
 
@@ -5,8 +6,7 @@ Content-Type: application/json
   "amount": 234.23
 }
 
-###
-
+### Запрос на создание аккаунта с отрицательным балансом
 POST http://localhost:7000/balance-service/accounts
 Content-Type: application/json
 
@@ -14,31 +14,27 @@ Content-Type: application/json
   "amount": -1
 }
 
-###
-
+### Получение информации об аккаунте по ID
 GET http://localhost:7000/balance-service/accounts/982b96e5-7f14-4860-9cd3-50ac19688790
 Accept: application/json
 
-###
-
+### Забрать деньги с баланса пользователя
 PUT http://localhost:7000/balance-service/accounts/withdraw/696a8d48-5a40-4ec2-803d-1f9bd6fb2949
 Content-type: application/json
 
 {
-  "amount": 1
+  "amount": 1.10
 }
 
-###
-
+### Перевод денег на баланс пользователя
 PUT http://localhost:7000/balance-service/accounts/deposit/696a8d48-5a40-4ec2-803d-1f9bd6fb2949
 Content-Type: application/json
 
 {
-  "amount": 453
+  "amount": 453.50
 }
 
-###
-
+### Зарезервировать деньги за заказ
 POST http://localhost:7000/balance-service/reservations
 Content-Type: application/json
 
@@ -49,20 +45,16 @@ Content-Type: application/json
   "amount": 100
 }
 
-###
-
+### Отмена резервации, возвращение денег пользователю
 DELETE http://localhost:7000/balance-service/reservations/cancel-reservation/eeafa29f-d963-44b3-b4b3-1432d69ff6b5
 
-###
-
+### Подтверждение резервации, внесение записи в отчёт для бухгалтерии
 DELETE http://localhost:7000/balance-service/reservations/confirm-reservation/e6c73f1a-9cbc-4fcb-9227-b47d89519d0d
 
-###
-
+### Список транзакций пользователя, можно указать ключ для пагинации. Подробнее в swagger.
 GET http://localhost:7000/balance-service/transfers/reports/696a8d48-5a40-4ec2-803d-1f9bd6fb2949?order-by=amount
 Accept: application/json
 
-###
-
+### Отчёт для бухгалтерии за определённый месяц
 GET http://localhost:7000/balance-service/reports?month=11
 Accept: text/csv
