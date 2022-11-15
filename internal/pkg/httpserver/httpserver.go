@@ -36,7 +36,7 @@ func RunServer(cfg config.Config, logger zerolog.Logger, router chi.Router) {
 	logger.Info().Msgf("Started service at %s:%d%s", cfg.Server.Host, cfg.Server.Port, cfg.Server.BasePath)
 
 	<-gracefulShutdown
-	logger.Info().Msg("Stopping server")
+	logger.Info().Msg("Gracefully stopping server")
 
 	ctx, cancel := context.WithTimeout(context.Background(), serverShutdownTimeout)
 	defer cancel()

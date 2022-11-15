@@ -51,10 +51,9 @@ func TestDepositFundsEntity(t *testing.T) {
 		Balance: 5.5,
 	}
 	req := request.DepositFunds{
-		ID:     validUUID,
 		Amount: 5.5,
 	}
-	require.Equal(t, expected, Account{}.DepositFundsEntity(req))
+	require.Equal(t, expected, Account{}.DepositFundsEntity(req, validUUID))
 }
 
 func TestWithdrawFundsEntity(t *testing.T) {
@@ -64,8 +63,7 @@ func TestWithdrawFundsEntity(t *testing.T) {
 		Balance: 5.5,
 	}
 	req := request.WithdrawFunds{
-		ID:     validUUID,
 		Amount: 5.5,
 	}
-	require.Equal(t, expected, Account{}.WithdrawFundsEntity(req))
+	require.Equal(t, expected, Account{}.WithdrawFundsEntity(req, validUUID))
 }
