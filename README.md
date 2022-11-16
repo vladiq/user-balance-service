@@ -36,7 +36,7 @@ docker-compose up
 
 ### Создание аккаунта пользователя
 
-```http request
+```text
 ### Создание аккаунта с заданным балансом
 
 POST http://localhost:7000/balance-service/accounts
@@ -52,7 +52,7 @@ HTTP/1.1 201 Created
 <Response body is empty>
 ```
 
-```http request
+```text
 ### Запрос на создание аккаунта с отрицательным балансом
 
 POST http://localhost:7000/balance-service/accounts
@@ -70,7 +70,7 @@ validating amount: must be no less than 0
 
 ### Получение баланса пользователя
 
-```http request
+```text
 ### Получение информации об аккаунте по ID
 GET http://localhost:7000/balance-service/accounts/e104b74f-b804-43ad-84df-ad8ba376dcdf
 
@@ -83,7 +83,7 @@ HTTP/1.1 200 OK
 }
 ```
 
-```http request
+```text
 ### Получение информации по невалидному UUID
 GET http://localhost:7000/balance-service/accounts/12345
 
@@ -95,7 +95,7 @@ binding body: invalid UUID length: 5
 
 ### Перевести деньги на баланс пользователя
 
-```http request
+```text
 ### Перевод денег на баланс пользователя
 
 PUT http://localhost:7000/balance-service/accounts/deposit/303371c3-3073-488c-971f-f57a6f5aeb6f
@@ -113,7 +113,7 @@ HTTP/1.1 204 No Content
 
 ### Списать деньги с баланса пользователя
 
-```http request
+```text
 PUT http://localhost:7000/balance-service/accounts/withdraw/696a8d48-5a40-4ec2-803d-1f9bd6fb2949
 Content-type: application/json
 
@@ -129,7 +129,7 @@ HTTP/1.1 204 No Content
 
 ### Перевод денег между пользователями
 
-```http request
+```text
 ### Перевод между пользователями
 POST http://localhost:7000/balance-service/transfers
 Content-Type: application/json
@@ -147,7 +147,7 @@ HTTP/1.1 201 Created
 <Response body is empty>
 ```
 
-```http request
+```text
 ### Попытка списать слишком много денег
 
 PUT http://localhost:7000/balance-service/accounts/withdraw/b567e9d6-025c-4d8f-8615-88f391c9e9be
@@ -165,7 +165,7 @@ not enough funds to withdraw: bad request
 
 ### Резервирование денег
 
-```http request
+```text
 ### Зарезервировать деньги за заказ
 
 POST http://localhost:7000/balance-service/reservations
@@ -186,7 +186,7 @@ HTTP/1.1 204 No Content
 
 ### Отмена резервирования
 
-```http request
+```text
 ### Отмена резервирования, возвращение денег пользователю
 
 DELETE http://localhost:7000/balance-service/reservations/cancel-reservation/a51a02f4-a827-4c11-bbbe-43650296b588
@@ -199,7 +199,7 @@ HTTP/1.1 204 No Content
 
 ### Подтверждение резервирования
 
-```http request
+```text
 ### Подтверждение резервации, внесение записи в отчёт для бухгалтерии
 
 DELETE http://localhost:7000/balance-service/reservations/confirm-reservation/17da187d-2ea9-4376-94c4-4af09011eaea
@@ -215,7 +215,7 @@ HTTP/1.1 204 No Content
 
 ID следующей страницы возвращается в JSON'е, ключ next_page_id.
 
-```http request
+```text
 ### Список транзакций пользователя, страница 1. Сортировка по сумме.
 
 GET http://localhost:7000/balance-service/transfers/reports/4509b5d2-bca1-43be-a5e6-44fc9293de2c?order-by=amount
@@ -264,7 +264,7 @@ HTTP/1.1 200 OK
 ```
 
 
-```http request
+```text
 ### Страница 2, сортировка по времени
 
 GET http://localhost:7000/balance-service/transfers/reports/4509b5d2-bca1-43be-a5e6-44fc9293de2c?order-by=date&page-id=37c07fc9-7747-487c-aac6-f44cd9536b9c
@@ -314,7 +314,7 @@ HTTP/1.1 200 OK
 
 ### Месячный отчёт для бухгалтерии
 
-```http request
+```text
 ### Отчёт для бухгалтерии за определённый месяц
 
 GET http://localhost:7000/balance-service/reports?month=11
@@ -330,7 +330,7 @@ c7fe41c5-200a-4d69-89fc-599c9f5e7cdb,861
 e028eda5-ae49-4e8c-a52f-fa5363acf071,200
 ```
 
-```http request
+```text
 ### Отчёт для бухгалтерии за невалидный месяц
 
 GET http://localhost:7000/balance-service/reports?month=-2
