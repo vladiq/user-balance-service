@@ -15,23 +15,33 @@ Content-Type: application/json
 }
 
 ### Получение информации об аккаунте по ID
-GET http://localhost:7000/balance-service/accounts/982b96e5-7f14-4860-9cd3-50ac19688790
+GET http://localhost:7000/balance-service/accounts/e028eda5-ae49-4e8c-a52f-fa5363acf071
 Accept: application/json
 
-### Забрать деньги с баланса пользователя
-PUT http://localhost:7000/balance-service/accounts/withdraw/696a8d48-5a40-4ec2-803d-1f9bd6fb2949
+### Списать деньги с баланса пользователя
+PUT http://localhost:7000/balance-service/accounts/withdraw/b567e9d6-025c-4d8f-8615-88f391c9e9be
 Content-type: application/json
 
 {
-  "amount": 1.10
+  "amount": 1000000000000
 }
 
 ### Перевод денег на баланс пользователя
-PUT http://localhost:7000/balance-service/accounts/deposit/696a8d48-5a40-4ec2-803d-1f9bd6fb2949
+PUT http://localhost:7000/balance-service/accounts/deposit/303371c3-3073-488c-971f-f57a6f5aeb6f
 Content-Type: application/json
 
 {
   "amount": 453.50
+}
+
+### Перевод между пользователями
+POST http://localhost:7000/balance-service/transfers
+Content-Type: application/json
+
+{
+  "amount": 100,
+  "from_id": "10473c75-7cb7-405d-bc23-886fd8564cb6",
+  "to_id": "01a223c8-462d-4466-94ab-4f98a7ed4c5f"
 }
 
 ### Зарезервировать деньги за заказ
@@ -39,20 +49,20 @@ POST http://localhost:7000/balance-service/reservations
 Content-Type: application/json
 
 {
-  "user_id": "9187fb8a-225f-40a9-bcc4-f91a79c32135",
-  "service_id": "9187fb8a-225f-40a9-bcc4-f91a79c32135",
-  "order_id": "696a8d48-5a40-4ec2-803d-1f9bd6fb2949",
+  "user_id": "6c8e7526-95c6-4822-97f8-168c4d2d2fb9",
+  "service_id": "e028eda5-ae49-4e8c-a52f-fa5363acf071",
+  "order_id": "521ab429-832d-4bc7-b870-26f491ad0b27",
   "amount": 100
 }
 
-### Отмена резервации, возвращение денег пользователю
-DELETE http://localhost:7000/balance-service/reservations/cancel-reservation/eeafa29f-d963-44b3-b4b3-1432d69ff6b5
+### Отмена резервирования, возвращение денег пользователю
+DELETE http://localhost:7000/balance-service/reservations/cancel-reservation/a51a02f4-a827-4c11-bbbe-43650296b588
 
-### Подтверждение резервации, внесение записи в отчёт для бухгалтерии
-DELETE http://localhost:7000/balance-service/reservations/confirm-reservation/e6c73f1a-9cbc-4fcb-9227-b47d89519d0d
+### Подтверждение резервирования, внесение записи в отчёт для бухгалтерии
+DELETE http://localhost:7000/balance-service/reservations/confirm-reservation/489d6de8-d280-49bd-a27d-a0645d1c24c1
 
-### Список транзакций пользователя, можно указать ключ для пагинации. Подробнее в swagger.
-GET http://localhost:7000/balance-service/transfers/reports/696a8d48-5a40-4ec2-803d-1f9bd6fb2949?order-by=amount
+### Список транзакций пользователя, можно указать ключ для пагинации. Подробнее в swagger или README.
+GET http://localhost:7000/balance-service/transfers/reports/4509b5d2-bca1-43be-a5e6-44fc9293de2c?order-by=date&page-id=37c07fc9-7747-487c-aac6-f44cd9536b9c
 Accept: application/json
 
 ### Отчёт для бухгалтерии за определённый месяц
