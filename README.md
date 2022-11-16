@@ -46,7 +46,7 @@ Content-Type: application/json
   "amount": 234.23
 }
 
-------------------------------------------------
+--------
 HTTP/1.1 201 Created
 
 <Response body is empty>
@@ -62,7 +62,7 @@ Content-Type: application/json
   "amount": -1
 }
 
---------------------------------------------
+--------
 HTTP/1.1 400 Bad Request
 
 validating amount: must be no less than 0
@@ -74,7 +74,7 @@ validating amount: must be no less than 0
 ### Получение информации об аккаунте по ID
 GET http://localhost:7000/balance-service/accounts/e104b74f-b804-43ad-84df-ad8ba376dcdf
 
------------------------------------------
+--------
 HTTP/1.1 200 OK
 
 {
@@ -87,7 +87,7 @@ HTTP/1.1 200 OK
 ### Получение информации по невалидному UUID
 GET http://localhost:7000/balance-service/accounts/12345
 
-------------------------------------------
+--------
 HTTP/1.1 400 Bad Request
 
 binding body: invalid UUID length: 5
@@ -105,7 +105,7 @@ Content-Type: application/json
   "amount": 453.50
 }
 
--------------------------------------
+--------
 HTTP/1.1 204 No Content
 
 <Response body is empty>
@@ -121,7 +121,7 @@ Content-type: application/json
 "amount": 1.10
 }
 
-----------------------------------------------
+--------
 HTTP/1.1 204 No Content
 
 <Response body is empty>
@@ -140,7 +140,7 @@ Content-Type: application/json
   "to_id": "01a223c8-462d-4466-94ab-4f98a7ed4c5f"
 }
 
-----------------------------------------------------------
+--------
 
 HTTP/1.1 201 Created
 
@@ -157,7 +157,7 @@ Content-type: application/json
   "amount": 1000000000000
 }
 
-------------------------------------------------
+--------
 HTTP/1.1 400 Bad Request
 
 not enough funds to withdraw: bad request
@@ -178,7 +178,7 @@ Content-Type: application/json
   "amount": 100
 }
 
----------------------------------------------------------
+--------
 HTTP/1.1 204 No Content
 
 <Response body is empty>
@@ -191,7 +191,7 @@ HTTP/1.1 204 No Content
 
 DELETE http://localhost:7000/balance-service/reservations/cancel-reservation/a51a02f4-a827-4c11-bbbe-43650296b588
 
-------------------------------------------------------------
+--------
 HTTP/1.1 204 No Content
 
 <Response body is empty>
@@ -204,7 +204,7 @@ HTTP/1.1 204 No Content
 
 DELETE http://localhost:7000/balance-service/reservations/confirm-reservation/17da187d-2ea9-4376-94c4-4af09011eaea
 
------------------------------------------------------------
+--------
 
 HTTP/1.1 204 No Content
 
@@ -221,7 +221,7 @@ ID следующей страницы возвращается в JSON'е, кл
 GET http://localhost:7000/balance-service/transfers/reports/4509b5d2-bca1-43be-a5e6-44fc9293de2c?order-by=amount
 Accept: application/json
 
----------------------------------------------------------------
+--------
 HTTP/1.1 200 OK
 
 {
@@ -270,7 +270,7 @@ HTTP/1.1 200 OK
 GET http://localhost:7000/balance-service/transfers/reports/4509b5d2-bca1-43be-a5e6-44fc9293de2c?order-by=date&page-id=37c07fc9-7747-487c-aac6-f44cd9536b9c
 Accept: application/json
 
------------------------------------------------------------------------------
+--------
 HTTP/1.1 200 OK
 
 {
@@ -320,7 +320,7 @@ HTTP/1.1 200 OK
 GET http://localhost:7000/balance-service/reports?month=11
 Accept: text/csv
 
----------------------------------------------------------------
+--------
 HTTP/1.1 200 OK
 Content-Disposition: attachment; filename="user-report.csv"
 Content-Type: text/csv
@@ -336,7 +336,7 @@ e028eda5-ae49-4e8c-a52f-fa5363acf071,200
 GET http://localhost:7000/balance-service/reports?month=-2
 Accept: text/csv
 
---------------------------------------------
+--------
 HTTP/1.1 400 Bad Request
 
 validating month: must be no less than 1
